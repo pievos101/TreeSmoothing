@@ -53,12 +53,14 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
     parent_num_samples = dt.tree_.n_node_samples[parent_node]
     node_num_samples = dt.tree_.n_node_samples[node]
     parent_feature = dt.tree_.feature[parent_node]
+
     if isinstance(dt, RegressorMixin):
         value = dt.tree_.value[node, :, :]
     else:
         # Normalize to probability vector
         if shrink_mode =="beta":
             value = deepcopy(dt.tree_.value[node, :, :])  
+            #print(value)
         else:
             value = deepcopy(dt.tree_.value[node, :, :]/ dt.tree_.weighted_n_node_samples[node])
         
@@ -75,36 +77,41 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
             # Classic hierarchical shrinkage
             reg = 1 + (lmb / parent_num_samples)
         else:
-            parent_split_feature = X_train_parent[:, parent_feature]
-            if shrink_mode in ["hs_entropy", "hs_entropy_2", "beta"]:
+            # parent_split_feature = X_train_parent[:, parent_feature]
+            # if shrink_mode in ["beta"]:
                 # Note: we can just use the value_counts, scipy.stats.entropy
                 # handles normalization. i.e. it is not necessary to divide by
                 # the total number of samples
-                _, counts = np.unique(parent_split_feature, return_counts=True)         
-                entropy = scipy.stats.entropy(counts)
-                if shrink_mode =="beta":
+                #_, counts = np.unique(parent_split_feature, return_counts=True)         
+                # entropy = scipy.stats.entropy(counts)
+            if shrink_mode =="beta":
                    # print(dt.tree_.impurity[node])
-                    alpha = alpha + value[0][0] 
-                    beta = beta + value[0][1] 
+                alpha = alpha + value[0][0] 
+                beta = beta + value[0][1] 
                     #BETA  = make_beta(alpha, beta)
-                if shrink_mode == "hs_entropy":
+                #if shrink_mode == "hs_entropy":
                     # Entropy-based shrinkage
-                    reg = 1 + (lmb * entropy / parent_num_samples)
-                elif shrink_mode == "hs_entropy_2":
-                    # Entropy-based shrinkage, but entropy term is added
-                    # outside of the fraction
-                    reg = entropy * (1 + lmb / parent_num_samples)
-            elif shrink_mode == "hs_log_cardinality":
+                #    reg = 1 + (lmb * entropy / parent_num_samples)
+            #elif shrink_mode == "hs_log_cardinality":
                 # Cardinality-based shrinkage
-                cardinality = len(np.unique(parent_split_feature))
-                reg = 1 + (lmb * np.log(cardinality) / parent_num_samples)
+                #cardinality = len(np.unique(parent_split_feature))
+                #reg = 1 + (lmb * np.log(cardinality) / parent_num_samples)
         cum_sum += (value - parent_val) / reg
         
     # Set the value of the node to the value of the telescopic sum
     assert not np.isnan(cum_sum).any(), "Cumulative sum is NaN"
     dt.tree_.value[node, :, :] = cum_sum
-    if shrink_mode =="beta":
-        dt.tree_.value[node, :, :] = [alpha, beta] 
+
+    if shrink_mode == 'beta':
+        if (alpha+beta)==0:
+            #dt.tree_.value[node, :, :] = [alpha/(1+beta+alpha), beta/(1+beta+alpha)]
+            prob = BETA.ppf(alpha/(1 + alpha + beta), alpha + 1, beta + 1)
+            dt.tree_.value[node, :, :] = [prob, 1-prob]
+        else:   
+            #dt.tree_.value[node, :, :] = [alpha/(beta+alpha), beta/(beta+alpha)]
+            prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
+            dt.tree_.value[node, :, :] = [prob, 1-prob]
+            
     # Update the impurity of the node
     # dt.tree_.impurity[node] = 1 - np.sum(np.power(cum_sum, 2))
     assert not np.isnan(dt.tree_.impurity[node]), "Impurity is NaN"
@@ -115,8 +122,8 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
         X_train_right = deepcopy(X_train[X_train[:, feature] > threshold])
         _shrink_tree_rec(dt, shrink_mode, lmb, deepcopy(alpha), deepcopy(beta), X_train_left, X_train, left,
                             node, value, deepcopy(cum_sum))
-        _shrink_tree_rec(dt, shrink_mode, lmb, deepcopy(alpha), deepcopy(beta), X_train_right, X_train,
-                            right, node, value, deepcopy(cum_sum))
+        _shrink_tree_rec(dt, shrink_mode, lmb, deepcopy(alpha), deepcopy(beta), X_train_right, X_train, right, 
+                            node, value, deepcopy(cum_sum))
     else:
         if shrink_mode == 'beta':
             if (alpha+beta)==0:
@@ -138,6 +145,8 @@ class ShrinkageEstimator(BaseEstimator):
         self.random_state = random_state
         self.alpha = alpha
         self.beta = beta
+
+        #print(self.beta)
     
     @abstractmethod
     def get_default_estimator(self):
@@ -161,6 +170,8 @@ class ShrinkageEstimator(BaseEstimator):
     def shrink(self, X):
         if hasattr(self.estimator_, "estimators_"):  # Random Forest
             for estimator in self.estimator_.estimators_:
+                #print("Its a Random Forest")
+                #print(self.alpha)
                 _shrink_tree_rec(estimator, self.shrink_mode, self.lmb, self.alpha, self.beta, X)
         else:  # Single tree
             _shrink_tree_rec(self.estimator_, self.shrink_mode, self.lmb, self.alpha, self.beta, X)
@@ -179,6 +190,11 @@ class ShrinkageEstimator(BaseEstimator):
         check_is_fitted(self)
         return self.estimator_.predict(X, *args, **kwargs)
 
+    def predict_proba(self, X, *args, **kwargs):
+        check_is_fitted(self)
+        return self.estimator_.predict_proba(X, *args, **kwargs)
+
+
     def score(self, X, y, *args, **kwargs):
         check_is_fitted(self)
         return self.estimator_.score(X, y, *args, **kwargs)
@@ -186,7 +202,7 @@ class ShrinkageEstimator(BaseEstimator):
 
 class ShrinkageClassifier(ShrinkageEstimator, ClassifierMixin):
     def get_default_estimator(self):
-        return RandomForestClassifier(n_estimators=200) # DecisionTreeClassifier()# ### # # #
+        return RandomForestClassifier(n_estimators=5) # DecisionTreeClassifier()# ### # # #
 
     def fit(self, X, y, **kwargs):
         super().fit(X, y, **kwargs)
