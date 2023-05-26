@@ -18,11 +18,24 @@ clf_datasets = [
     ("recidivism", "compas_two_year_clean", "imodels")
 ]
 
-# scoring
-#sc = "balanced_accuracy"
-sc = "roc_auc"
+clf_datasets = [
+    ("heart", "heart", "imodels"), 
+    ("breast-cancer", "breast_cancer", "imodels"),
+    ("haberman", "haberman", "imodels"), 
+    ("ionosphere", "ionosphere", "pmlb"),
+    ("diabetes-clf", "diabetes", "pmlb"),
+    ("german", "german", "pmlb")
+]
 
-lmbs = np.arange(0, 100, 1)
+clf_datasets = [
+    ("breast-cancer", "breast_cancer", "imodels")
+]
+
+# scoring
+sc = "balanced_accuracy"
+#sc = "roc_auc"
+
+iterations = np.arange(0, 10, 1)
 for ds_name, id, source in clf_datasets:
     X, y, feature_names = get_clean_dataset(id, data_source=source)
     scores = {}
@@ -35,126 +48,81 @@ for ds_name, id, source in clf_datasets:
     #            cross_val_score(clf, X, y, cv=10, n_jobs=-1,
     #                            scoring="balanced_accuracy").mean())        
 
-    # vanilla
-    shrink_mode="vanilla"
-    scores[shrink_mode] = []
-    for lmb in lmbs:
-        clf = RandomForestClassifier(n_estimators=200) ## DecisionTreeClassifier() #
-        #print(clf)
-        scores[shrink_mode].append(cross_val_score(clf, X, y, cv=10, n_jobs=-1,
-            scoring=sc).mean())    
-    print("Vanilla")
+    scores["vanilla"] = []
+    scores["hs"] = []
+    scores["beta"] = []
 
-    # hs
-    shrink_mode="hs"
-    scores[shrink_mode] = []
-    param_grid = {
-    "lmb": [0.01, 0.1, 1, 10, 25, 50, 100],
-    "shrink_mode": ["hs"]}
+    for xx in iterations:
 
-    grid_search = GridSearchCV(ShrinkageClassifier(), param_grid, cv=5, n_jobs=-1, scoring=sc)
-    grid_search.fit(X, y)
-    best_params = grid_search.best_params_
-    print(best_params)
+        # vanilla
+        print("Vanilla Mode")
+        shrink_mode="vanilla"
+        #scores[shrink_mode] = []
+        clf = RandomForestClassifier(n_estimators=5) #DecisionTreeClassifier() #RandomForestClassifier(n_estimators=1) ## DecisionTreeClassifier() #
+        scores[shrink_mode].append(cross_val_score(clf, X, y, cv=5, n_jobs=-1, scoring=sc).mean())    
 
-    for lmb in lmbs:
+        # hs
+        print("HS Mode")
+        shrink_mode="hs"
+        #scores[shrink_mode] = []
+        param_grid = {
+        "lmb": [0.001, 0.01, 0.1, 1, 10, 25, 50, 100, 200],
+        "shrink_mode": ["hs"]}
+
+        grid_search = GridSearchCV(ShrinkageClassifier(), param_grid, cv=10, n_jobs=-1, scoring=sc)
+        grid_search.fit(X, y)
+        best_params = grid_search.best_params_
+        print(best_params)
+
         clf = ShrinkageClassifier(shrink_mode=shrink_mode, lmb=best_params.get('lmb'))
         #print(clf)
-        scores[shrink_mode].append(cross_val_score(clf, X, y, cv=10, n_jobs=-1, 
-            scoring=sc).mean())    
-    
-    # hs_entropy
-    shrink_mode="hs_entropy"
-    scores[shrink_mode] = []
-    param_grid = {
-    "lmb": [0.01, 0.1, 1, 10, 25, 50, 100],
-    "shrink_mode": ["hs_entropy"]}
+        scores[shrink_mode].append(cross_val_score(clf, X, y, cv=5, n_jobs=-1, scoring=sc).mean())    
 
-    grid_search = GridSearchCV(ShrinkageClassifier(), param_grid, cv=5, n_jobs=-1, scoring=sc)
-    grid_search.fit(X, y)
-    best_params = grid_search.best_params_
-    print(best_params)
+        # beta
+        print("Beta Shrinkage")
+        shrink_mode="beta"
+        #scores[shrink_mode] = []
+        param_grid = {
+        "alpha": [-1, -10, -20, -50, -100, -200, -500, 1, 10, 20, 50, 100, 200, 500],
+        "beta": [-1, -10, -20, -50, -100, -200, -500, 1, 10, 20, 50, 100, 200, 500],
+        "shrink_mode": ["beta"]}
 
-    for lmb in lmbs:
-        clf = ShrinkageClassifier(shrink_mode=shrink_mode, lmb=best_params.get('lmb'))
+        grid_search = GridSearchCV(ShrinkageClassifier(), param_grid, cv=10, n_jobs=-1, scoring=sc)
+        grid_search.fit(X, y)
+
+        best_params = grid_search.best_params_
+        print(best_params)
+        clf = ShrinkageClassifier(shrink_mode=shrink_mode, alpha=best_params.get('alpha'), beta=best_params.get('beta'))
         #print(clf)
-        scores[shrink_mode].append(cross_val_score(clf, X, y, cv=10, n_jobs=-1,
-            scoring=sc).mean())    
-    
-    # hs_entropy_2
-    shrink_mode="hs_entropy_2"
-    scores[shrink_mode] = []
-    param_grid = {
-    "lmb": [0.01, 0.1, 1, 10, 25, 50, 100],
-    "shrink_mode": ["hs_entropy_2"]}
-
-    grid_search = GridSearchCV(ShrinkageClassifier(), param_grid, cv=5, n_jobs=-1, scoring=sc)
-    grid_search.fit(X, y)
-    best_params = grid_search.best_params_
-    print(best_params)
-
-    for lmb in lmbs:
-        clf = ShrinkageClassifier(shrink_mode=shrink_mode, lmb=best_params.get('lmb'))
-        #print(clf)
-        scores[shrink_mode].append(cross_val_score(clf, X, y, cv=10, n_jobs=-1,
-            scoring=sc).mean())    
-    
-    # hs_log_cardinality
-    shrink_mode="hs_log_cardinality"
-    scores[shrink_mode] = []
-    param_grid = {
-    "lmb": [0.01, 0.1, 1, 10, 25, 50, 100],
-    "shrink_mode": ["hs_log_cardinality"]}
-
-    grid_search = GridSearchCV(ShrinkageClassifier(), param_grid, cv=5, n_jobs=-1, scoring=sc)
-    grid_search.fit(X, y)
-    best_params = grid_search.best_params_
-    print(best_params)
-
-    for lmb in lmbs:
-        clf = ShrinkageClassifier(shrink_mode=shrink_mode, lmb=best_params.get('lmb'))
-        #print(clf)
-        scores[shrink_mode].append(cross_val_score(clf, X, y, cv=10, n_jobs=-1,
-            scoring=sc).mean())    
-
-    # beta
-    shrink_mode="beta"
-    scores[shrink_mode] = []
-    param_grid = {
-    "alpha": [-1000, -700, -500, -200, -100, -50, -20, -10 , 1, 10 , 20, 50, 100, 200, 500, 700, 1000],
-    "beta":[-1000, -700, -500, -200, -100, -50, -20, -10 , 1, 10 , 20, 50, 100, 200, 500, 700, 1000],
-    "shrink_mode": ["beta"]}
-
-    grid_search = GridSearchCV(ShrinkageClassifier(), param_grid, cv=5, n_jobs=-1, scoring=sc)
-    grid_search.fit(X, y)
-
-    best_params = grid_search.best_params_
-    print(best_params)
-    for lmb in lmbs:
-        clf = ShrinkageClassifier(shrink_mode=shrink_mode, alpha=best_params.get('alpha'),beta=best_params.get('beta'))
-        #print(clf)
-        scores[shrink_mode].append(cross_val_score(clf, X, y, cv=10, n_jobs=-1,
-            scoring=sc).mean())    
-    
-    #print(scores)
-    #for key in scores:
-    #    #plt.plot(lmbs, scores[key], label=key)
-    #    plt.boxplot(scores[key], labels=key)
-    
+        scores[shrink_mode].append(cross_val_score(clf, X, y, cv=5, n_jobs=-1, scoring=sc).mean())    
+        
+        print(scores)
+        #for key in scores:
+        #    #plt.plot(lmbs, scores[key], label=key)
+        #    plt.boxplot(scores[key], labels=key)
+        
     import numpy as np
+    import matplotlib.pyplot as plt
     fig, ax = plt.subplots()
-    data = list([scores['vanilla'], scores['hs'], scores['hs_entropy'], scores['hs_entropy_2'], scores['hs_log_cardinality'], scores['beta']])
+    data = list([scores['vanilla'][0], scores['hs'][0], 
+        scores['beta'][0]])
     # basic plot
-    ax.boxplot(data, notch=True)
+    ax.boxplot(data, notch=False)
+    ax.set_ylim([0, 1])
 
     ax.set_title(ds_name)
     ax.set_xlabel('')
     ax.set_ylabel(sc)
-    xticklabels=['vanilla','hs', 'hs_entropy', 'hs_entropy_2', 'hs_log_cardinality', 'beta']
+    xticklabels=['vanilla','hs', 'beta']
     ax.set_xticklabels(xticklabels)
     plt.xticks(fontsize=7)#, rotation=45)
     # add horizontal grid lines
     #ax.yaxis.grid(True)
+
+    for i, d in enumerate(data):
+        y = np.array(data)[i]
+        x = np.random.normal(i + 1, 0.04, len(y))
+        plt.scatter(x, y)
 
     plt.savefig(ds_name)
     # show the plot
