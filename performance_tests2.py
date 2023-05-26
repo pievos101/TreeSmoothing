@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import GridSearchCV
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier
+import sys
 
 clf_datasets = [
     ("heart", "heart", "imodels"),
@@ -27,9 +28,14 @@ clf_datasets = [
     ("german", "german", "pmlb")
 ]
 
+
 clf_datasets = [
     ("breast-cancer", "breast_cancer", "imodels")
 ]
+
+#clf_datasets = [
+#    ("haberman", "haberman", "imodels")
+#]
 
 # scoring
 sc = "balanced_accuracy"
@@ -58,7 +64,7 @@ for ds_name, id, source in clf_datasets:
         print("Vanilla Mode")
         shrink_mode="vanilla"
         #scores[shrink_mode] = []
-        clf = RandomForestClassifier(n_estimators=5) #DecisionTreeClassifier() #RandomForestClassifier(n_estimators=1) ## DecisionTreeClassifier() #
+        clf = RandomForestClassifier(n_estimators=50) #DecisionTreeClassifier() #RandomForestClassifier(n_estimators=1) ## DecisionTreeClassifier() #
         scores[shrink_mode].append(cross_val_score(clf, X, y, cv=5, n_jobs=-1, scoring=sc).mean())    
 
         # hs
@@ -69,7 +75,7 @@ for ds_name, id, source in clf_datasets:
         "lmb": [0.001, 0.01, 0.1, 1, 10, 25, 50, 100, 200],
         "shrink_mode": ["hs"]}
 
-        grid_search = GridSearchCV(ShrinkageClassifier(), param_grid, cv=10, n_jobs=-1, scoring=sc)
+        grid_search = GridSearchCV(ShrinkageClassifier(), param_grid, cv=5, n_jobs=-1, scoring=sc)
         grid_search.fit(X, y)
         best_params = grid_search.best_params_
         print(best_params)
@@ -83,11 +89,11 @@ for ds_name, id, source in clf_datasets:
         shrink_mode="beta"
         #scores[shrink_mode] = []
         param_grid = {
-        "alpha": [-1, -10, -20, -50, -100, -200, -500, 1, 10, 20, 50, 100, 200, 500],
-        "beta": [-1, -10, -20, -50, -100, -200, -500, 1, 10, 20, 50, 100, 200, 500],
+        "alpha": [0, -10, -50, -100, 0, 10, 50, 100],
+        "beta": [0, -10, -50, -100, 0, 10, 50, 100],
         "shrink_mode": ["beta"]}
 
-        grid_search = GridSearchCV(ShrinkageClassifier(), param_grid, cv=10, n_jobs=-1, scoring=sc)
+        grid_search = GridSearchCV(ShrinkageClassifier(), param_grid, cv=5, n_jobs=-1, scoring=sc)
         grid_search.fit(X, y)
 
         best_params = grid_search.best_params_
@@ -100,32 +106,33 @@ for ds_name, id, source in clf_datasets:
         #for key in scores:
         #    #plt.plot(lmbs, scores[key], label=key)
         #    plt.boxplot(scores[key], labels=key)
-        
-    import numpy as np
-    import matplotlib.pyplot as plt
-    fig, ax = plt.subplots()
-    data = list([scores['vanilla'][0], scores['hs'][0], 
-        scores['beta'][0]])
-    # basic plot
-    ax.boxplot(data, notch=False)
-    ax.set_ylim([0, 1])
 
-    ax.set_title(ds_name)
-    ax.set_xlabel('')
-    ax.set_ylabel(sc)
-    xticklabels=['vanilla','hs', 'beta']
-    ax.set_xticklabels(xticklabels)
-    plt.xticks(fontsize=7)#, rotation=45)
-    # add horizontal grid lines
-    #ax.yaxis.grid(True)
+# plots 
+import numpy as np
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots()
+data = list([scores['vanilla'], scores['hs'], 
+    scores['beta']])
+# basic plot
+ax.boxplot(data, notch=False)
+ax.set_ylim([0.5, 1])
 
-    for i, d in enumerate(data):
-        y = np.array(data)[i]
-        x = np.random.normal(i + 1, 0.04, len(y))
-        plt.scatter(x, y)
+ax.set_title(ds_name)
+ax.set_xlabel('')
+ax.set_ylabel(sc)
+xticklabels=['vanilla','hs', 'beta']
+ax.set_xticklabels(xticklabels)
+plt.xticks(fontsize=7)#, rotation=45)
+# add horizontal grid lines
+#ax.yaxis.grid(True)
 
-    plt.savefig(ds_name)
-    # show the plot
-    #plt.show()
+for i, d in enumerate(data):
+    y = np.array(data)[i]
+    x = np.random.normal(i + 1, 0.04, len(y))
+    plt.scatter(x, y, s=[5])
+
+plt.savefig(ds_name)
+# show the plot
+plt.show()
 
 
