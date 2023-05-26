@@ -86,8 +86,8 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
                 # entropy = scipy.stats.entropy(counts)
             if shrink_mode =="beta":
                    # print(dt.tree_.impurity[node])
-                alpha = alpha + value[0][0] 
-                beta = beta + value[0][1] 
+                alpha = alpha + value[0][0]
+                beta = beta + value[0][1]
                     #BETA  = make_beta(alpha, beta)
                 #if shrink_mode == "hs_entropy":
                     # Entropy-based shrinkage
@@ -103,14 +103,16 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
     dt.tree_.value[node, :, :] = cum_sum
 
     if shrink_mode == 'beta':
-        if (alpha+beta)==0:
+        dt.tree_.value[node, :, :] = [alpha, beta]
+        # The following is for impurity
+        #if (alpha+beta)==0:
             #dt.tree_.value[node, :, :] = [alpha/(1+beta+alpha), beta/(1+beta+alpha)]
-            prob = BETA.ppf(alpha/(1 + alpha + beta), alpha + 1, beta + 1)
-            dt.tree_.value[node, :, :] = [prob, 1-prob]
-        else:   
+        #    prob = BETA.ppf(alpha/(1 + alpha + beta), alpha + 1, beta + 1)
+        #    dt.tree_.value[node, :, :] = [prob, 1-prob]
+        #else:   
             #dt.tree_.value[node, :, :] = [alpha/(beta+alpha), beta/(beta+alpha)]
-            prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
-            dt.tree_.value[node, :, :] = [prob, 1-prob]
+        #    prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
+        #    dt.tree_.value[node, :, :] = [prob, 1-prob]
             
     # Update the impurity of the node
     # dt.tree_.impurity[node] = 1 - np.sum(np.power(cum_sum, 2))
@@ -128,12 +130,15 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
         if shrink_mode == 'beta':
             if (alpha+beta)==0:
                 #dt.tree_.value[node, :, :] = [alpha/(1+beta+alpha), beta/(1+beta+alpha)]
-                prob = BETA.ppf(alpha/(1 + alpha + beta), alpha + 1, beta + 1)
-                dt.tree_.value[node, :, :] = [prob, 1-prob]
+                #prob = BETA.ppf(alpha/(1 + alpha + beta), alpha + 1, beta + 1)
+                #dt.tree_.value[node, :, :] = [prob, 1-prob]
+                dt.tree_.value[node, :, :] = [alpha/(1 + alpha + beta), beta/(1 + alpha + beta)]
             else:   
                 #dt.tree_.value[node, :, :] = [alpha/(beta+alpha), beta/(beta+alpha)]
-                prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
-                dt.tree_.value[node, :, :] = [prob, 1-prob]
+                #prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
+                #dt.tree_.value[node, :, :] = [prob, 1-prob]
+                dt.tree_.value[node, :, :] = [alpha/(alpha + beta), beta/(alpha + beta)]
+
            
 class ShrinkageEstimator(BaseEstimator):
     def __init__(self, base_estimator: BaseEstimator = None,
@@ -202,7 +207,7 @@ class ShrinkageEstimator(BaseEstimator):
 
 class ShrinkageClassifier(ShrinkageEstimator, ClassifierMixin):
     def get_default_estimator(self):
-        return RandomForestClassifier(n_estimators=5) # DecisionTreeClassifier()# ### # # #
+        return RandomForestClassifier(n_estimators=50) # DecisionTreeClassifier()# ### # # #
 
     def fit(self, X, y, **kwargs):
         super().fit(X, y, **kwargs)
