@@ -33,13 +33,23 @@ clf_datasets = [
     ("breast-cancer", "breast_cancer", "imodels")
 ]
 
-#clf_datasets = [
-#    ("haberman", "haberman", "imodels")
-#]
+clf_datasets = [
+    ("heart", "heart", "imodels")
+]
+
+clf_datasets = [
+     ("diabetes-clf", "diabetes", "pmlb")
+]
+
+####
+clf_datasets = [
+    ("haberman", "haberman", "imodels")
+]
+
 
 # scoring
 sc = "balanced_accuracy"
-#sc = "roc_auc"
+sc = "roc_auc"
 
 iterations = np.arange(0, 10, 1)
 for ds_name, id, source in clf_datasets:
@@ -64,7 +74,7 @@ for ds_name, id, source in clf_datasets:
         print("Vanilla Mode")
         shrink_mode="vanilla"
         #scores[shrink_mode] = []
-        clf = RandomForestClassifier(n_estimators=50) #DecisionTreeClassifier() #RandomForestClassifier(n_estimators=1) ## DecisionTreeClassifier() #
+        clf = RandomForestClassifier(n_estimators=10) #DecisionTreeClassifier() #RandomForestClassifier(n_estimators=1) ## DecisionTreeClassifier() #
         scores[shrink_mode].append(cross_val_score(clf, X, y, cv=5, n_jobs=-1, scoring=sc).mean())    
 
         # hs
@@ -89,8 +99,8 @@ for ds_name, id, source in clf_datasets:
         shrink_mode="beta"
         #scores[shrink_mode] = []
         param_grid = {
-        "alpha": [0, -10, -50, -100, 0, 10, 50, 100],
-        "beta": [0, -10, -50, -100, 0, 10, 50, 100],
+        "alpha": [1000, 800, 500, 100, 50, 30, 10, 1],
+        "beta": [1000, 800, 500, 100, 50, 30, 10, 1],
         "shrink_mode": ["beta"]}
 
         grid_search = GridSearchCV(ShrinkageClassifier(), param_grid, cv=5, n_jobs=-1, scoring=sc)
