@@ -8,6 +8,7 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import roc_auc_score
 
 import sys
 
@@ -77,9 +78,12 @@ for ds_name, id, source in clf_datasets:
         #scores[shrink_mode] = []
         clf = RandomForestClassifier(n_estimators=ntrees) 
         clf.fit(X_train, y_train)
-        pred_vanilla = clf.predict(X_test)
-        scores[shrink_mode].append(balanced_accuracy_score(y_test, pred_vanilla))    
-
+        if sc == "balanced accuracy":
+            pred_vanilla = clf.predict(X_test)
+            scores[shrink_mode].append(balanced_accuracy_score(y_test, pred_vanilla))    
+        if sc == "roc_auc":
+            pred_vanilla = clf.predict_proba(X_test)[:,1]
+            scores[shrink_mode].append(roc_auc_score(y_test, pred_vanilla))    
         # hs
         print("HS Mode")
         shrink_mode="hs"
@@ -97,8 +101,12 @@ for ds_name, id, source in clf_datasets:
         clf = ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees),shrink_mode=shrink_mode, lmb=best_params.get('lmb'))
         #print(clf)
         clf.fit(X_train, y_train)
-        pred_hs = clf.predict(X_test)
-        scores[shrink_mode].append(balanced_accuracy_score(y_test, pred_hs))      
+        if sc == "balanced accuracy":
+            pred_hs = clf.predict(X_test)
+            scores[shrink_mode].append(balanced_accuracy_score(y_test, pred_hs))      
+        if sc == "roc_auc":
+            pred_hs = clf.predict_proba(X_test)[:,1]
+            scores[shrink_mode].append(roc_auc_score(y_test, pred_hs))    
 
         # beta
         print("Beta Shrinkage")
@@ -116,9 +124,14 @@ for ds_name, id, source in clf_datasets:
         print(best_params)
         clf = ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees),shrink_mode=shrink_mode, alpha=best_params.get('alpha'), beta=best_params.get('beta'))
         clf.fit(X_train, y_train)
-        pred_beta = clf.predict(X_test)
-        scores[shrink_mode].append(balanced_accuracy_score(y_test, pred_beta))      
         
+        if sc == "balanced accuracy":
+            pred_beta = clf.predict(X_test)
+            scores[shrink_mode].append(balanced_accuracy_score(y_test, pred_beta))      
+        if sc == "roc_auc":
+            pred_beta = clf.predict_proba(X_test)[:,1]
+            scores[shrink_mode].append(roc_auc_score(y_test, pred_beta))    
+
         print(scores)
         #for key in scores:
         #    #plt.plot(lmbs, scores[key], label=key)
