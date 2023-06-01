@@ -162,6 +162,7 @@ class ShrinkageEstimator(BaseEstimator):
 
         if self.base_estimator is not None:    
             self.estimator_ = clone(self.base_estimator)
+            #print("Yes, is set")
         else:
             self.estimator_ = self.get_default_estimator()
 
@@ -182,8 +183,7 @@ class ShrinkageEstimator(BaseEstimator):
             _shrink_tree_rec(self.estimator_, self.shrink_mode, self.lmb, self.alpha, self.beta, X)
 
     def _validate_arguments(self, X, y, feature_names):
-        if self.shrink_mode not in ["hs", "hs_entropy", "hs_entropy_2",
-                                    "hs_log_cardinality","beta"]:
+        if self.shrink_mode not in ["hs","beta"]:
             raise ValueError("Invalid choice for shrink_mode")
         X, y, feature_names = _check_fit_arguments(
             X, y, feature_names=feature_names)
