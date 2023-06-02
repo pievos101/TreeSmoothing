@@ -51,8 +51,8 @@ clf_datasets = [
 ]
 
 # scoring
-sc = "balanced_accuracy"
-#sc = "roc_auc"
+#sc = "balanced_accuracy"
+sc = "roc_auc"
 #ntrees = c("1","2","5","10","50","100")
 ntrees = 100
 iterations = np.arange(0, 20, 1)
