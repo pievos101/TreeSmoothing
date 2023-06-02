@@ -54,7 +54,7 @@ clf_datasets = [
 sc = "balanced_accuracy"
 #sc = "roc_auc"
 #ntrees = c("1","2","5","10","50","100")
-ntrees = 1
+ntrees = 10
 iterations = np.arange(0, 20, 1)
 
 for ds_name, id, source in clf_datasets:
