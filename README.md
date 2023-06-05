@@ -1,7 +1,7 @@
 # Bayesian post-hoc regulariation for random forests
 
 ## Description
-Both classes inherit from `ShrinkageEstimator`, which extends `sklearn.base.BaseEstimator`.
+All classes inherit from `ShrinkageEstimator`, which extends `sklearn.base.BaseEstimator`.
 Usage of these two classes is entirely analogous, and works just like any other `sklearn` estimator:
 - `__init__()` parameters:
     - `base_estimator`: the estimator around which we "wrap" hierarchical shrinkage. This should be a tree-based estimator: `DecisionTreeClassifier`, `RandomForestClassifier`, ... (analogous for `Regressor`s)
