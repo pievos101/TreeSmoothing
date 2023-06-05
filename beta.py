@@ -1,3 +1,8 @@
+"""
+:authors: Bastian Pfeifer and Arne Gevaert 
+
+"""
+
 from abc import abstractmethod
 from copy import deepcopy
 from typing import Tuple, List
@@ -78,24 +83,9 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
             reg = 1 + (lmb / parent_num_samples)
         else:
             # parent_split_feature = X_train_parent[:, parent_feature]
-            # if shrink_mode in ["beta"]:
-                # Note: we can just use the value_counts, scipy.stats.entropy
-                # handles normalization. i.e. it is not necessary to divide by
-                # the total number of samples
-                #_, counts = np.unique(parent_split_feature, return_counts=True)         
-                # entropy = scipy.stats.entropy(counts)
             if shrink_mode =="beta":
-                   # print(dt.tree_.impurity[node])
                 alpha = alpha + value[0][0]
                 beta = beta + value[0][1]
-                    #BETA  = make_beta(alpha, beta)
-                #if shrink_mode == "hs_entropy":
-                    # Entropy-based shrinkage
-                #    reg = 1 + (lmb * entropy / parent_num_samples)
-            #elif shrink_mode == "hs_log_cardinality":
-                # Cardinality-based shrinkage
-                #cardinality = len(np.unique(parent_split_feature))
-                #reg = 1 + (lmb * np.log(cardinality) / parent_num_samples)
         cum_sum += (value - parent_val) / reg
         
     # Set the value of the node to the value of the telescopic sum
@@ -149,7 +139,6 @@ class ShrinkageEstimator(BaseEstimator):
         self.alpha = alpha
         self.beta = beta
 
-        #print(self.beta)
     
     @abstractmethod
     def get_default_estimator(self):
