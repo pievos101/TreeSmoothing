@@ -32,6 +32,8 @@ from sklearn.metrics import roc_auc_score
 import sys
 ```
 
+Example
+
 ```python
 clf_datasets = [
     ("breast-cancer", "breast_cancer", "imodels")
@@ -76,13 +78,15 @@ param_grid = {
 "lmb": [0.001, 0.01, 0.1, 1, 10, 25, 50, 100, 200],
 "shrink_mode": ["hs"]}
 
-grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), param_grid, cv=5, n_jobs=-1, scoring=sc)
+grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), 
+param_grid, cv=5, n_jobs=-1, scoring=sc)
 
 grid_search.fit(X_train, y_train)
 best_params = grid_search.best_params_
 print(best_params)
 
-clf = ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees),shrink_mode=shrink_mode, lmb=best_params.get('lmb'))
+clf = ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees),shrink_mode=shrink_mode, 
+lmb=best_params.get('lmb'))
 
 clf.fit(X_train, y_train)
 if sc == "balanced_accuracy":
@@ -106,7 +110,8 @@ grid_search.fit(X, y)
 
 best_params = grid_search.best_params_
 print(best_params)
-clf = ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees),shrink_mode=shrink_mode, alpha=best_params.get('alpha'), beta=best_params.get('beta'))
+clf = ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees),shrink_mode=shrink_mode, 
+alpha=best_params.get('alpha'), beta=best_params.get('beta'))
 clf.fit(X_train, y_train)
 
 if sc == "balanced_accuracy":
