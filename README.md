@@ -105,7 +105,8 @@ param_grid = {
 "beta": [1500, 1000, 800, 500, 100, 50, 30, 10, 1],
 "shrink_mode": ["beta"]}
 
-grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), param_grid, cv=5, n_jobs=-1, scoring=sc)
+grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), param_grid, 
+cv=5, n_jobs=-1, scoring=sc)
 grid_search.fit(X, y)
 
 best_params = grid_search.best_params_
