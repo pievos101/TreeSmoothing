@@ -1,6 +1,6 @@
 # Bayesian post-hoc regulariation for random forests
 
-## Usage
+## Description
 Both classes inherit from `ShrinkageEstimator`, which extends `sklearn.base.BaseEstimator`.
 Usage of these two classes is entirely analogous, and works just like any other `sklearn` estimator:
 - `__init__()` parameters:
@@ -14,4 +14,4 @@ Usage of these two classes is entirely analogous, and works just like any other 
     - `random_state`: random state for reproducibility
 - Other functions: `fit(X, y)`, `predict(X)`, `predict_proba(X)`, `score(X, y)` work just like with any other `sklearn` estimator.
 
-## Notebooks
+## Usage
