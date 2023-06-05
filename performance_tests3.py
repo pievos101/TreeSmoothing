@@ -47,102 +47,102 @@ clf_datasets = [
 
 ####
 clf_datasets = [
-    ("breast-cancer", "breast_cancer", "imodels")
+      ("diabetes-clf", "diabetes", "pmlb")
 ]
 
 # scoring
-sc = "balanced_accuracy"
-#sc = "roc_auc"
-#ntrees = c("1","2","5","10","50","100")
-ntrees = 10
-iterations = np.arange(0, 20, 1)
+#sc = "balanced_accuracy"
+sc = "roc_auc"
 
-for ds_name, id, source in clf_datasets:
-    X, y, feature_names = get_clean_dataset(id, data_source=source)
-    scores = {}
-    print(ds_name)
+#ntrees = 100
 
-    
-    scores["vanilla"] = []
-    scores["hs"] = []
-    scores["beta"] = []
+for ntrees in [1, 2, 5, 10, 50, 100]:
+    iterations = np.arange(0, 20, 1)
 
-    for xx in iterations:
+    for ds_name, id, source in clf_datasets:
+        X, y, feature_names = get_clean_dataset(id, data_source=source)
+        scores = {}
+        print(ds_name)
 
-        # train-test split
-        #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
-        # using the train test split function
-        X_train, X_test, y_train, y_test = train_test_split(X, y ,random_state=104, train_size=0.8, shuffle=True)
-
-        # vanilla
-        print("Vanilla Mode")
-        shrink_mode="vanilla"
-        #scores[shrink_mode] = []
-        clf = RandomForestClassifier(n_estimators=ntrees) 
-        clf.fit(X_train, y_train)
-        if sc == "balanced_accuracy":
-            pred_vanilla = clf.predict(X_test)
-            scores[shrink_mode].append(balanced_accuracy_score(y_test, pred_vanilla))    
-        if sc == "roc_auc":
-            pred_vanilla = clf.predict_proba(X_test)[:,1]
-            scores[shrink_mode].append(roc_auc_score(y_test, pred_vanilla))    
-        # hs
-        print("HS Mode")
-        shrink_mode="hs"
-        #scores[shrink_mode] = []
-        param_grid = {
-        "lmb": [0.001, 0.01, 0.1, 1, 10, 25, 50, 100, 200],
-        "shrink_mode": ["hs"]}
-
-        grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), param_grid, cv=5, n_jobs=-1, scoring=sc)
         
-        grid_search.fit(X_train, y_train)
-        best_params = grid_search.best_params_
-        print(best_params)
+        scores["vanilla"] = []
+        scores["hs"] = []
+        scores["beta"] = []
+            
+        for xx in iterations:
 
-        clf = ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees),shrink_mode=shrink_mode, lmb=best_params.get('lmb'))
-        #print(clf)
-        clf.fit(X_train, y_train)
-        if sc == "balanced_accuracy":
-            pred_hs = clf.predict(X_test)
-            scores[shrink_mode].append(balanced_accuracy_score(y_test, pred_hs))      
-        if sc == "roc_auc":
-            pred_hs = clf.predict_proba(X_test)[:,1]
-            scores[shrink_mode].append(roc_auc_score(y_test, pred_hs))    
+            # train-test split
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
 
-        # beta
-        print("Beta Shrinkage")
-        shrink_mode="beta"
-        #scores[shrink_mode] = []
-        param_grid = {
-        "alpha": [2000, 1500, 1000, 800, 500, 100, 50, 30, 10, 1],
-        "beta": [2000, 1500, 1000, 800, 500, 100, 50, 30, 10, 1],
-        "shrink_mode": ["beta"]}
+            # vanilla
+            print("Vanilla Mode")
+            shrink_mode="vanilla"
+            #scores[shrink_mode] = []
+            clf = RandomForestClassifier(n_estimators=ntrees) 
+            clf.fit(X_train, y_train)
+            if sc == "balanced_accuracy":
+                pred_vanilla = clf.predict(X_test)
+                scores[shrink_mode].append(balanced_accuracy_score(y_test, pred_vanilla))    
+            if sc == "roc_auc":
+                pred_vanilla = clf.predict_proba(X_test)[:,1]
+                scores[shrink_mode].append(roc_auc_score(y_test, pred_vanilla))    
+            # hs
+            print("HS Mode")
+            shrink_mode="hs"
+            #scores[shrink_mode] = []
+            param_grid = {
+            "lmb": [0.001, 0.01, 0.1, 1, 10, 25, 50, 100, 200],
+            "shrink_mode": ["hs"]}
 
-        grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), param_grid, cv=5, n_jobs=-1, scoring=sc)
-        grid_search.fit(X, y)
+            grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), param_grid, cv=5, n_jobs=-1, scoring=sc)
+            
+            grid_search.fit(X_train, y_train)
+            best_params = grid_search.best_params_
+            print(best_params)
 
-        best_params = grid_search.best_params_
-        print(best_params)
-        clf = ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees),shrink_mode=shrink_mode, alpha=best_params.get('alpha'), beta=best_params.get('beta'))
-        clf.fit(X_train, y_train)
-        
-        if sc == "balanced_accuracy":
-            pred_beta = clf.predict(X_test)
-            scores[shrink_mode].append(balanced_accuracy_score(y_test, pred_beta))      
-        if sc == "roc_auc":
-            pred_beta = clf.predict_proba(X_test)[:,1]
-            scores[shrink_mode].append(roc_auc_score(y_test, pred_beta))    
+            clf = ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees),shrink_mode=shrink_mode, lmb=best_params.get('lmb'))
+            #print(clf)
+            clf.fit(X_train, y_train)
+            if sc == "balanced_accuracy":
+                pred_hs = clf.predict(X_test)
+                scores[shrink_mode].append(balanced_accuracy_score(y_test, pred_hs))      
+            if sc == "roc_auc":
+                pred_hs = clf.predict_proba(X_test)[:,1]
+                scores[shrink_mode].append(roc_auc_score(y_test, pred_hs))    
 
-        print(scores)
-        #for key in scores:
-        #    #plt.plot(lmbs, scores[key], label=key)
-        #    plt.boxplot(scores[key], labels=key)
+            # beta
+            print("Beta Shrinkage")
+            shrink_mode="beta"
+            #scores[shrink_mode] = []
+            param_grid = {
+            "alpha": [2000, 1500, 1000, 800, 500, 100, 50, 30, 10, 1],
+            "beta": [2000, 1500, 1000, 800, 500, 100, 50, 30, 10, 1],
+            "shrink_mode": ["beta"]}
 
-RES = np.vstack([scores['vanilla'],scores['hs'],scores['beta']])
-print(RES)
+            grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), param_grid, cv=5, n_jobs=-1, scoring=sc)
+            grid_search.fit(X, y)
 
-np.savetxt(str(ntrees),RES, delimiter='\t')
+            best_params = grid_search.best_params_
+            print(best_params)
+            clf = ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees),shrink_mode=shrink_mode, alpha=best_params.get('alpha'), beta=best_params.get('beta'))
+            clf.fit(X_train, y_train)
+            
+            if sc == "balanced_accuracy":
+                pred_beta = clf.predict(X_test)
+                scores[shrink_mode].append(balanced_accuracy_score(y_test, pred_beta))      
+            if sc == "roc_auc":
+                pred_beta = clf.predict_proba(X_test)[:,1]
+                scores[shrink_mode].append(roc_auc_score(y_test, pred_beta))    
+
+            print(scores)
+            #for key in scores:
+            #    #plt.plot(lmbs, scores[key], label=key)
+            #    plt.boxplot(scores[key], labels=key)
+
+    RES = np.vstack([scores['vanilla'],scores['hs'],scores['beta']])
+    print(RES)
+
+    np.savetxt(str(ntrees),RES, delimiter='\t')
 
 # plots 
 import numpy as np

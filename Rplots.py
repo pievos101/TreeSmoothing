@@ -25,7 +25,7 @@ rownames(RES[[6]]) = NN
 RES[[6]] = melt(t(RES[[6]]))
 
 ntrees = c("1","2","5","10","50","100")
-#ntrees = c("1","2","5","10")
+#ntrees = c("1","2","5","10","50")
 
 names(RES) = ntrees 
 

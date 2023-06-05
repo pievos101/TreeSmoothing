@@ -104,6 +104,7 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
 
     if shrink_mode == 'beta':
         dt.tree_.value[node, :, :] = [alpha, beta]
+        
         # The following is for impurity
         #if (alpha+beta)==0:
             #dt.tree_.value[node, :, :] = [alpha/(1+beta+alpha), beta/(1+beta+alpha)]
@@ -129,16 +130,13 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
     else:
         if shrink_mode == 'beta':
             if (alpha+beta)==0:
-                #dt.tree_.value[node, :, :] = [alpha/(1+beta+alpha), beta/(1+beta+alpha)]
                 prob = BETA.ppf(alpha/(1 + alpha + beta), alpha + 1, beta + 1)
                 dt.tree_.value[node, :, :] = [prob, 1-prob]
                 #dt.tree_.value[node, :, :] = [alpha/(1 + alpha + beta), beta/(1 + alpha + beta)]
             else:   
-                #dt.tree_.value[node, :, :] = [alpha/(beta+alpha), beta/(beta+alpha)]
                 prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
                 dt.tree_.value[node, :, :] = [prob, 1-prob]
                 #dt.tree_.value[node, :, :] = [alpha/(alpha + beta), beta/(alpha + beta)]
-
            
 class ShrinkageEstimator(BaseEstimator):
     def __init__(self, base_estimator: BaseEstimator = None,
