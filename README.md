@@ -1,4 +1,4 @@
-# Bayesian post-hoc regulariation of random forests
+# Bayesian post-hoc regulariation for random forests
 
 ## Usage
 Both classes inherit from `ShrinkageEstimator`, which extends `sklearn.base.BaseEstimator`.
