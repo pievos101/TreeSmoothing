@@ -121,4 +121,8 @@ if sc == "roc_auc":
     pred_beta = clf.predict_proba(X_test)[:,1]
     scores[shrink_mode].append(roc_auc_score(y_test, pred_beta))    
 
+
+RES = np.vstack([scores['vanilla'],scores['hs'],scores['beta']])
+print(RES)
+
 ```
