@@ -2,6 +2,7 @@
 <img src="https://github.com/pievos101/TreeSmoothing/blob/main/blurredForest.jpg" width="400">
 </p>
 
+This above picture is from (https://www.blackandwhite.ie/mononeil/blurred-forest)
 
 # Bayesian post-hoc regularization for random forests
 
