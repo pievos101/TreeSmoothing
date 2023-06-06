@@ -6,7 +6,12 @@ This above picture is from (https://www.blackandwhite.ie/mononeil/blurred-forest
 
 # Bayesian post-hoc regularization for random forests
 
-## Description
+## Method Description
+Random Forests are powerful ensemble learning algorithms widely used in various machine learning tasks. However, they have a tendency to overfit noisy or irrelevant features, which can result in decreased generalization performance. Post-hoc regularization techniques aim to mitigate this issue by modifying the structure of the learned ensemble after its training.
+
+Here, we propose Bayesian post-hoc regularization to leverage the reliable patterns captured by leaf nodes closer to the root, while potentially reducing the impact of more specific and potentially noisy leaf nodes deeper in the tree. This approach allows for a form of pruning that does not alter the general structure of the trees but rather adjusts the influence of leaf nodes based on their proximity to the root node. We have evaluated the performance of our method on various machine learning data sets. Our approach demonstrates competitive performance with the state-of-the-art methods and, in certain cases, surpasses them in terms of predictive accuracy and generalization.
+
+## Code Description
 All classes inherit from `ShrinkageEstimator`, which extends `sklearn.base.BaseEstimator`.
 Usage of these two classes is entirely analogous, and works just like any other `sklearn` estimator:
 - `__init__()` parameters:
