@@ -91,7 +91,7 @@ if sc == "roc_auc":
     scores[shrink_mode].append(roc_auc_score(y_test, pred_vanilla))    
 ```
 
-### Hierarchical Shrinkage 
+### Hierarchical Shrinkage from Agarwal et al. 2022
 
 ```python
 # hs - Hierarchical Shrinkage #########################
@@ -122,7 +122,7 @@ if sc == "roc_auc":
     pred_hs = clf.predict_proba(X_test)[:,1]
     scores[shrink_mode].append(roc_auc_score(y_test, pred_hs))    
 ```
-### Bayesian post-hoc regularization 
+### Bayesian post-hoc regularization from Pfeifer 2023
 
 ```python
 # beta - Bayesian post-hoc regularization #########################
