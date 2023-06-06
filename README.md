@@ -26,7 +26,8 @@ Usage of these two classes is entirely analogous, and works just like any other 
 - Other functions: `fit(X, y)`, `predict(X)`, `predict_proba(X)`, `score(X, y)` work just like with any other `sklearn` estimator.
 
 ## :
-The Python code was written by Bastian Pfeifer and Arne Gevaert
+The Python code was written by Bastian Pfeifer and Arne Gevaert. 
+It is based on the Hierarchical Shrinkage implementation of the Python package imodels (https://github.com/csinva/imodels).
 ## :
 
 ## Usage
