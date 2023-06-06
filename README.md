@@ -26,7 +26,6 @@ Import of main function
 from beta import ShrinkageClassifier
 ```
 
-
 Other imports
 
 ```python
@@ -44,7 +43,7 @@ from sklearn.metrics import roc_auc_score
 import sys
 ```
 
-Example
+Example data set 
 
 ```python
 clf_datasets = [
@@ -68,7 +67,11 @@ print(ds_name)
 scores["vanilla"] = []
 scores["hs"] = []
 scores["beta"] = []
+```
 
+### Vanilla Random Forest 
+
+```python
 # vanilla RF ##########################################
 print("Vanilla Mode")
 shrink_mode="vanilla"
@@ -82,7 +85,11 @@ if sc == "balanced_accuracy":
 if sc == "roc_auc":
     pred_vanilla = clf.predict_proba(X_test)[:,1]
     scores[shrink_mode].append(roc_auc_score(y_test, pred_vanilla))    
+```
 
+### Hierarchical Shrinkage 
+
+```python
 # hs - Hierarchical Shrinkage #########################
 print("HS Mode")
 shrink_mode="hs"
@@ -110,7 +117,10 @@ if sc == "balanced_accuracy":
 if sc == "roc_auc":
     pred_hs = clf.predict_proba(X_test)[:,1]
     scores[shrink_mode].append(roc_auc_score(y_test, pred_hs))    
+```
+### Bayesian post-hoc regularization 
 
+```python
 # beta - Bayesian post-hoc regularization #########################
 print("Beta Shrinkage")
 shrink_mode="beta"
@@ -139,9 +149,22 @@ if sc == "balanced_accuracy":
 if sc == "roc_auc":
     pred_beta = clf.predict_proba(X_test)[:,1]
     scores[shrink_mode].append(roc_auc_score(y_test, pred_beta))    
+```
 
-
+```python
 RES = np.vstack([scores['vanilla'],scores['hs'],scores['beta']])
 print(RES)
+```
+
+### Bibtex
+```
+@inproceedings{agarwal2022hierarchical,
+  title={Hierarchical Shrinkage: Improving the accuracy and interpretability of tree-based models.},
+  author={Agarwal, Abhineet and Tan, Yan Shuo and Ronen, Omer and Singh, Chandan and Yu, Bin},
+  booktitle={International Conference on Machine Learning},
+  pages={111--135},
+  year={2022},
+  organization={PMLR}
+}
 
 ```
