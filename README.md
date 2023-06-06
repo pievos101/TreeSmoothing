@@ -1,3 +1,8 @@
+<p align="center">
+<img src="https://github.com/pievos101/TreeSmoothing/blob/main/blurredTree.jpg" width="400">
+</p>
+
+
 # Bayesian post-hoc regularization for random forests
 
 ## Description

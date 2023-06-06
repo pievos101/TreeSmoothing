@@ -43,14 +43,14 @@ clf_datasets = [
 
 ####
 clf_datasets = [
-     ("diabetes-clf", "diabetes", "pmlb")
+     ("german", "german", "pmlb")
 ]
 
 # ionosphere --> bad performance for beta
 
 # scoring
-#sc = "balanced_accuracy"
-sc = "roc_auc"
+sc = "balanced_accuracy"
+#sc = "roc_auc"
 
 #ntrees = 10
 
@@ -127,33 +127,5 @@ for ntrees in [1, 2, 5, 10, 50, 100]:
     print(RES)
 
     np.savetxt(str(ntrees),RES, delimiter='\t')
-
-# plots 
-import numpy as np
-import matplotlib.pyplot as plt
-fig, ax = plt.subplots()
-data = list([scores['vanilla'], scores['hs'], 
-    scores['beta']])
-# basic plot
-ax.boxplot(data, notch=False)
-ax.set_ylim([0.5, 1])
-
-ax.set_title(ds_name)
-ax.set_xlabel('')
-ax.set_ylabel(sc)
-xticklabels=['vanilla','hs', 'beta']
-ax.set_xticklabels(xticklabels)
-plt.xticks(fontsize=7)#, rotation=45)
-# add horizontal grid lines
-#ax.yaxis.grid(True)
-
-for i, d in enumerate(data):
-    y = np.array(data)[i]
-    x = np.random.normal(i + 1, 0.04, len(y))
-    plt.scatter(x, y, s=[5])
-
-plt.savefig(ds_name)
-# show the plot
-#plt.show()
 
 
