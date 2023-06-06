@@ -63,10 +63,11 @@ scores["vanilla"] = []
 scores["hs"] = []
 scores["beta"] = []
 
-# vanilla RF
+# vanilla RF ##########################################
 print("Vanilla Mode")
 shrink_mode="vanilla"
-#scores[shrink_mode] = []
+#######################################################
+
 clf = RandomForestClassifier(n_estimators=ntrees) 
 clf.fit(X_train, y_train)
 if sc == "balanced_accuracy":
@@ -76,10 +77,11 @@ if sc == "roc_auc":
     pred_vanilla = clf.predict_proba(X_test)[:,1]
     scores[shrink_mode].append(roc_auc_score(y_test, pred_vanilla))    
 
-# hs - Hierarchical Shrinkage 
+# hs - Hierarchical Shrinkage #########################
 print("HS Mode")
 shrink_mode="hs"
-#scores[shrink_mode] = []
+#######################################################
+
 param_grid = {
 "lmb": [0.001, 0.01, 0.1, 1, 10, 25, 50, 100, 200],
 "shrink_mode": ["hs"]}
@@ -103,10 +105,11 @@ if sc == "roc_auc":
     pred_hs = clf.predict_proba(X_test)[:,1]
     scores[shrink_mode].append(roc_auc_score(y_test, pred_hs))    
 
-# beta - Bayesian post-hoc regularization
+# beta - Bayesian post-hoc regularization #########################
 print("Beta Shrinkage")
 shrink_mode="beta"
-#scores[shrink_mode] = []
+###################################################################
+
 param_grid = {
 "alpha": [1500, 1000, 800, 500, 100, 50, 30, 10, 1],
 "beta": [1500, 1000, 800, 500, 100, 50, 30, 10, 1],
