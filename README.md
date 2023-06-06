@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/pievos101/TreeSmoothing/blob/main/blurredTree.jpg" width="400">
+<img src="https://github.com/pievos101/TreeSmoothing/blob/main/blurredForest.jpg" width="400">
 </p>
 
 
