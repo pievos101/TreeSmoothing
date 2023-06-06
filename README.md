@@ -15,11 +15,17 @@ Usage of these two classes is entirely analogous, and works just like any other 
 - Other functions: `fit(X, y)`, `predict(X)`, `predict_proba(X)`, `score(X, y)` work just like with any other `sklearn` estimator.
 
 ## Usage
-Imports 
+Import of main function
+```python
+from beta import ShrinkageClassifier
+```
+
+
+Other imports
+ 
 ```python
 from imodels.util.data_util import get_clean_dataset
 import numpy as np
-from beta import ShrinkageClassifier
 from sklearn.model_selection import cross_val_score
 import matplotlib.pyplot as plt
 from sklearn.model_selection import GridSearchCV
