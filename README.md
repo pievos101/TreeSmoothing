@@ -167,7 +167,7 @@ RES = np.vstack([scores['vanilla'],scores['hs'],scores['beta']])
 print(RES)
 ```
 
-### Bibtex
+### Bibtex References
 ```
 @inproceedings{agarwal2022hierarchical,
   title={Hierarchical Shrinkage: Improving the accuracy and interpretability of tree-based models.},
@@ -176,6 +176,20 @@ print(RES)
   pages={111--135},
   year={2022},
   organization={PMLR}
+}
+
+@software{
+imodels2021,
+title        = {imodels: a python package for fitting interpretable models},
+journal      = {Journal of Open Source Software},
+publisher    = {The Open Journal},
+year         = {2021},
+author       = {Singh, Chandan and Nasseri, Keyan and Tan, Yan Shuo and Tang, Tiffany and Yu, Bin},
+volume       = {6},
+number       = {61},
+pages        = {3192},
+doi          = {10.21105/joss.03192},
+url          = {https://doi.org/10.21105/joss.03192},
 }
 
 ```
