@@ -59,7 +59,6 @@ clf_datasets = [
     ("breast-cancer", "breast_cancer", "imodels")
 ]
 
-
 # scoring
 #sc = "balanced_accuracy"
 sc = "roc_auc"
@@ -69,6 +68,9 @@ ntrees = 10
 
 # Read in data set
 X, y, feature_names = get_clean_dataset(id, data_source=source)
+
+# train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
 
 scores = {}
 print(ds_name)
