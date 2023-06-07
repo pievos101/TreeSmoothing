@@ -193,18 +193,4 @@ If you find the Bayesian post-hoc method useful please cite
   organization={PMLR}
 }
 
-@software{
-imodels2021,
-title        = {imodels: a python package for fitting interpretable models},
-journal      = {Journal of Open Source Software},
-publisher    = {The Open Journal},
-year         = {2021},
-author       = {Singh, Chandan and Nasseri, Keyan and Tan, Yan Shuo and Tang, Tiffany and Yu, Bin},
-volume       = {6},
-number       = {61},
-pages        = {3192},
-doi          = {10.21105/joss.03192},
-url          = {https://doi.org/10.21105/joss.03192},
-}
-
 ```
