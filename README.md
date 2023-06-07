@@ -18,7 +18,7 @@ Usage of these two classes is entirely analogous, and works just like any other 
     - `base_estimator`: the estimator around which we "wrap" hierarchical shrinkage. This should be a tree-based estimator: `DecisionTreeClassifier`, `RandomForestClassifier`, ... (analogous for `Regressor`s)
     - `shrink_mode`: 2 options:
         - `"hs"`: classical Hierarchical Shrinkage (from Agarwal et al. 2022)
-        - `"beta"`: Bayesian post-hoc regulariation
+        - `"beta"`: Bayesian post-hoc regularization (from Pfeifer 2023)
     - `lmb`: lambda hyperparameter
     - `alpha`: alpha hyperparameter
     - `beta`: beta hyperparameter
@@ -168,6 +168,19 @@ print(RES)
 The TreeSmoothing Python code was written by Bastian Pfeifer and Arne Gevaert. 
 It is based on the Hierarchical Shrinkage implementation within the Python package imodels (https://github.com/csinva/imodels).
 
+## Citation
+If you find the Bayesian post-hoc method useful please cite
+
+```
+@misc{pfeifer2023bayesian,
+      title={Bayesian post-hoc regularization of random forests}, 
+      author={Bastian Pfeifer},
+      year={2023},
+      eprint={2306.03702},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+```
 
 ### Bibtex References
 ```
