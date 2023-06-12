@@ -27,7 +27,21 @@ Usage of these two classes is entirely analogous, and works just like any other 
 
 
 ## Usage
-Import of main function
+
+Install the Python package treesmoothing via pip
+
+```python
+pip install treesmoothing
+```
+
+and import the ShrinkageClassifier as 
+
+```python
+from treesmoothing import ShrinkageClassifier
+```
+
+or import of main function from source 
+
 ```python
 from beta import ShrinkageClassifier
 ```
@@ -64,13 +78,12 @@ sc = "roc_auc"
 ntrees = 10
 
 # Read in data set
-X, y, feature_names = get_clean_dataset(id, data_source=source)
+X, y, feature_names = get_clean_dataset('breast_cancer', data_source='imodels')
 
 # train-test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
 
 scores = {}
-print(ds_name)
 
 scores["vanilla"] = []
 scores["hs"] = []
@@ -140,7 +153,7 @@ param_grid = {
 "shrink_mode": ["beta"]}
 
 grid_search = GridSearchCV(ShrinkageClassifier
-(RandomForestClassifie(n_estimators=ntrees)), param_grid, cv=5,
+(RandomForestClassifier(n_estimators=ntrees)), param_grid, cv=5,
 n_jobs=-1, scoring=sc)
 
 grid_search.fit(X, y)
@@ -159,9 +172,10 @@ if sc == "roc_auc":
     scores[shrink_mode].append(roc_auc_score(y_test, pred_beta))    
 ```
 
+Print the results
+
 ```python
-RES = np.vstack([scores['vanilla'],scores['hs'],scores['beta']])
-print(RES)
+print(scores)
 ```
 
 ## Acknowledgement 

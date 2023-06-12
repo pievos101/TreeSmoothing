@@ -43,7 +43,7 @@ clf_datasets = [
 
 ####
 clf_datasets = [
-     ("german", "german", "pmlb")
+      ("juvenile", "juvenile_clean", "imodels")
 ]
 
 # ionosphere --> bad performance for beta
@@ -105,8 +105,8 @@ for ntrees in [1, 2, 5, 10, 50, 100]:
             shrink_mode="beta"
             #scores[shrink_mode] = []
             param_grid = {
-            "alpha": [2000, 1500, 1000, 800, 500, 100, 50, 30, 10, 1],
-            "beta": [2000, 1500, 1000, 800, 500, 100, 50, 30, 10, 1],
+            "alpha": [5000, 4000, 3000, 2000, 1500, 1000, 800, 500, 100, 50, 30, 10, 1],
+            "beta": [5000, 4000, 3000, 2000, 1500, 1000, 800, 500, 100, 50, 30, 10, 1],
             "shrink_mode": ["beta"]}
 
             grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), param_grid, cv=5, n_jobs=-1, scoring=sc)
