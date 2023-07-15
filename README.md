@@ -40,10 +40,11 @@ and import the ShrinkageClassifier as
 from treesmoothing import ShrinkageClassifier
 ```
 
-or import of main function from source 
+or install locally import of main function from source 
 
 ```python
-from beta import ShrinkageClassifier
+pip install ./treesmoothing
+from treesmooting import ShrinkageClassifier
 ```
 
 Other imports

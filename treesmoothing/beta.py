@@ -92,21 +92,21 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
     assert not np.isnan(cum_sum).any(), "Cumulative sum is NaN"
     dt.tree_.value[node, :, :] = cum_sum
 
+    # HS: updated impurity
+    dt.tree_.impurity[node] = 1 - np.sum(np.power(cum_sum, 2))
+    
     if shrink_mode == 'beta':
         dt.tree_.value[node, :, :] = [alpha, beta]
         
         # The following is for impurity
-        #if (alpha+beta)==0:
-            #dt.tree_.value[node, :, :] = [alpha/(1+beta+alpha), beta/(1+beta+alpha)]
-        #    prob = BETA.ppf(alpha/(1 + alpha + beta), alpha + 1, beta + 1)
-        #    dt.tree_.value[node, :, :] = [prob, 1-prob]
-        #else:   
-            #dt.tree_.value[node, :, :] = [alpha/(beta+alpha), beta/(beta+alpha)]
-        #    prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
-        #    dt.tree_.value[node, :, :] = [prob, 1-prob]
+        if (alpha+beta)==0:
+            prob = BETA.ppf(alpha/(1 + alpha + beta), alpha + 1, beta + 1)
+            dt.tree_.impurity[node] = 1 - np.sum(np.power([prob, 1-prob], 2))
+        else:   
+            prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
+            dt.tree_.impurity[node] = 1 - np.sum(np.power([prob, 1-prob], 2))
             
     # Update the impurity of the node
-    # dt.tree_.impurity[node] = 1 - np.sum(np.power(cum_sum, 2))
     assert not np.isnan(dt.tree_.impurity[node]), "Impurity is NaN"
     
     # If not leaf: recurse
