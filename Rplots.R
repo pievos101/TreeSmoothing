@@ -4,7 +4,7 @@ RES = list()
 library(ggplot2)
 library(reshape)
 
-NN = c("VANILLA","HS","BETA")
+NN = c("RF","HS","BETA", "BETA-")
 RES[[1]] = read.table("1")
 rownames(RES[[1]]) = NN
 RES[[1]] = melt(t(RES[[1]]))
