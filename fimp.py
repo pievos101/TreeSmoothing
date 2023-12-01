@@ -23,8 +23,9 @@ X, y = make_classification(n_samples=500,
                             shuffle=False, 
                             n_informative=20,
                             n_redundant=10,
-                            class_sep=2,
-                            weights=[0.80])
+                            class_sep=3,
+                            #flip_y = 0.3)
+                            weights=[0.70])
 
 ntrees = 100
 #sc = "roc_auc"

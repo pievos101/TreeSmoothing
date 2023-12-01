@@ -92,31 +92,31 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
     assert not np.isnan(cum_sum).any(), "Cumulative sum is NaN"
     dt.tree_.value[node, :, :] = cum_sum
 
-    #print(cum_sum)
-    #print("-------")
     # HS: updated impurity
-    dt.tree_.impurity[node] = 1 - np.sum(np.power(cum_sum, 2))
-    #print(dt.tree_.impurity[node])
+    if shrink_mode == "hs":
+        dt.tree_.impurity[node] = 1 - np.sum(np.power(cum_sum, 2))
 
     if shrink_mode == 'beta':
         dt.tree_.value[node, :, :] = [alpha, beta]
         
-        # The following is for impurity
-        if (alpha+beta)==0:
-            #prob = BETA.ppf(alpha/(1 + alpha + beta), alpha + 1, beta + 1)
-            p1 = value[0][0]/(beta + 1)
-            p2 = value[0][1]/(alpha + 1)
-            prob = [p1, p2] 
-            prob = prob/np.sum(prob)
-            dt.tree_.impurity[node] = 1 - np.sum(np.power(prob, 2))
-        else:   
+        # The following is for impurity # --------------
+        #if (alpha+beta)==0:
+        #    #prob = BETA.ppf(alpha/(1 + alpha + beta), alpha + 1, beta + 1)
+        #    p1 = value[0][0]/(beta + 1)
+        #    p2 = value[0][1]/(alpha + 1)
+        #    prob = [p1, p2] 
+        #    prob = prob/np.sum(prob)
+        #    dt.tree_.impurity[node] = 1 - np.sum(np.power(prob, 2))
+        #else:   
             #prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
-            p1 = (value[0][0])/beta
-            p2 = (value[0][1])/alpha
-            prob = [p1, p2] 
-            prob = prob/np.sum(prob)
-            dt.tree_.impurity[node] = 1 - np.sum(np.power(prob, 2))
+        #    p1 = (value[0][0])/beta
+        #    p2 = (value[0][1])/alpha
+        #    prob = [p1, p2] 
+        #    prob = prob/np.sum(prob)
+        #    dt.tree_.impurity[node] = 1 - np.sum(np.power(prob, 2))
             #print(dt.tree_.impurity[node])
+        # -------------------------------------------
+
     # Update the impurity of the node
     assert not np.isnan(dt.tree_.impurity[node]), "Impurity is NaN"
     
