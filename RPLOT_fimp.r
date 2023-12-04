@@ -13,6 +13,22 @@ b_cov = sum(is.element(1:20,rank(-as.matrix(b))[1:20]))
 c_cov = sum(is.element(1:20,rank(-as.matrix(c))[1:20]))
 
 
-RES = c(a_cov, b_cov, c_cov)
-
+RES = c(a_cov, b_cov, c_cov)/20
 print(RES)
+
+
+a = as.matrix(a)
+b = as.matrix(b)
+c = as.matrix(c)
+
+a = a/sum(a)
+b = b/sum(b)
+c = c/sum(c)
+
+as = sqrt((mean(a[1:20]) - mean(a[-(1:20)]))^2)
+bs = sqrt((mean(b[1:20]) - mean(b[-(1:20)]))^2)
+cs = sqrt((mean(c[1:20]) - mean(c[-(1:20)]))^2)
+
+print(as)
+print(bs)
+print(cs)

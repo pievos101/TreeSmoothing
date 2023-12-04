@@ -23,11 +23,11 @@ X, y = make_classification(n_samples=500,
                             shuffle=False, 
                             n_informative=20,
                             n_redundant=10,
-                            class_sep=3,
+                            class_sep=1,
                             #flip_y = 0.3)
-                            weights=[0.70])
+                            weights=[0.50])
 
-ntrees = 100
+ntrees = 500
 #sc = "roc_auc"
 sc = "balanced_accuracy"
 

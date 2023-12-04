@@ -102,19 +102,18 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
         # The following is for impurity # --------------
         #if (alpha+beta)==0:
         #    #prob = BETA.ppf(alpha/(1 + alpha + beta), alpha + 1, beta + 1)
-        #    p1 = value[0][0]/(beta + 1)
-        #    p2 = value[0][1]/(alpha + 1)
-        #    prob = [p1, p2] 
+        #    p = alpha/(1 + alpha + beta)
+        #    prob = [p, 1 - p] 
         #    prob = prob/np.sum(prob)
         #    dt.tree_.impurity[node] = 1 - np.sum(np.power(prob, 2))
         #else:   
-            #prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
-        #    p1 = (value[0][0])/beta
-        #    p2 = (value[0][1])/alpha
-        #    prob = [p1, p2] 
-        #    prob = prob/np.sum(prob)
-        #    dt.tree_.impurity[node] = 1 - np.sum(np.power(prob, 2))
-            #print(dt.tree_.impurity[node])
+        #    #prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
+        p1 = alpha/(alpha + beta)
+        p2 = (alpha-value[0][0])/((alpha-value[0][0])+(beta-value[0][1]))
+        prob = [p1, p2] 
+        prob = prob/np.sum(prob)
+        dt.tree_.impurity[node] = 1 - np.sum(np.power(prob, 2))
+        #    #print(dt.tree_.impurity[node])
         # -------------------------------------------
 
     # Update the impurity of the node
