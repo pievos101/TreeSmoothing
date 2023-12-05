@@ -42,7 +42,9 @@ def _check_fit_arguments(X, y, feature_names) -> Tuple[npt.NDArray, npt.NDArray,
     return X, y, feature_names
 
 
-def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
+def _shrink_tree_rec(dt, shrink_mode, lmb=0, 
+                     alpha=1, beta=1,
+                     alpha_p=1, beta_p =1, 
                      X_train=None,
                      X_train_parent=None,
                      node=0, parent_node=None, parent_val=None, cum_sum=None):
@@ -73,6 +75,8 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
     # If root: initialize cum_sum to the value of the root node
     if parent_node is None:
         cum_sum = value
+        alpha_p = alpha
+        beta_p = beta
         alpha = alpha + value[0][0] 
         beta = beta + value[0][1]
     else:
@@ -108,11 +112,12 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
         #    dt.tree_.impurity[node] = 1 - np.sum(np.power(prob, 2))
         #else:   
         #    #prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
-        p1 = alpha/(alpha + beta)
-        p2 = (alpha-value[0][0])/((alpha-value[0][0])+(beta-value[0][1]))
-        prob = [p1, p2] 
-        prob = prob/np.sum(prob)
-        dt.tree_.impurity[node] = 1 - np.sum(np.power(prob, 2))
+        #p = (alpha-alpha_p)/((alpha-alpha_p) + (beta-beta_p))
+        #p1 = alpha/(alpha + beta)
+        #p2 = (alpha-value[0][0])/((alpha-value[0][0])+(beta-value[0][1]))
+        #prob = [p, 1-p] 
+        #prob = prob/np.sum(prob)
+        #dt.tree_.impurity[node] = 1 - np.sum(np.power(prob, 2))
         #    #print(dt.tree_.impurity[node])
         # -------------------------------------------
 
@@ -123,24 +128,27 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0, alpha=1, beta=1,
     if not (left == -1 and right == -1):
         X_train_left = deepcopy(X_train[X_train[:, feature] <= threshold])
         X_train_right = deepcopy(X_train[X_train[:, feature] > threshold])
-        _shrink_tree_rec(dt, shrink_mode, lmb, deepcopy(alpha), deepcopy(beta), X_train_left, X_train, left,
+        _shrink_tree_rec(dt, shrink_mode, lmb, deepcopy(alpha), deepcopy(beta), 
+                            deepcopy(alpha_p), deepcopy(beta_p), X_train_left, X_train, left,
                             node, value, deepcopy(cum_sum))
-        _shrink_tree_rec(dt, shrink_mode, lmb, deepcopy(alpha), deepcopy(beta), X_train_right, X_train, right, 
+        _shrink_tree_rec(dt, shrink_mode, lmb, deepcopy(alpha), deepcopy(beta), 
+                            deepcopy(alpha_p), deepcopy(beta_p), X_train_right, X_train, right, 
                             node, value, deepcopy(cum_sum))
     else:
         if shrink_mode == 'beta':
-            if (alpha+beta)==0:
+            #if (alpha+beta)==0:
                 #prob = BETA.ppf(alpha/(1 + alpha + beta), alpha + 1, beta + 1)
                 #dt.tree_.value[node, :, :] = [prob, 1-prob]
-                dt.tree_.value[node, :, :] = [alpha/(1 + alpha + beta), beta/(1 + alpha + beta)]
-            else:   
+            #    dt.tree_.value[node, :, :] = [alpha/(1 + alpha + beta), beta/(1 + alpha + beta)]
+            #else:   
                 #prob = BETA.ppf(alpha/(alpha + beta), alpha, beta)
                 #dt.tree_.value[node, :, :] = [prob, 1-prob]
-                dt.tree_.value[node, :, :] = [alpha/(alpha + beta), beta/(alpha + beta)]
+            dt.tree_.value[node, :, :] = [alpha/(alpha + beta), beta/(alpha + beta)]
            
 class ShrinkageEstimator(BaseEstimator):
     def __init__(self, base_estimator: BaseEstimator = None,
                  shrink_mode: str = "hs", lmb: float = 1, alpha: float=1, beta: float=1,
+                 alpha_p: float=1, beta_p: float=1,
                  random_state=None):
         self.base_estimator = base_estimator
         self.shrink_mode = shrink_mode
@@ -148,6 +156,8 @@ class ShrinkageEstimator(BaseEstimator):
         self.random_state = random_state
         self.alpha = alpha
         self.beta = beta
+        self.alpha_p = alpha_p
+        self.beta_p = beta_p
 
     
     @abstractmethod
@@ -175,9 +185,9 @@ class ShrinkageEstimator(BaseEstimator):
             for estimator in self.estimator_.estimators_:
                 #print("Its a Random Forest")
                 #print(self.alpha)
-                _shrink_tree_rec(estimator, self.shrink_mode, self.lmb, self.alpha, self.beta, X)
+                _shrink_tree_rec(estimator, self.shrink_mode, self.lmb, self.alpha, self.beta, self.alpha_p, self.beta_p, X)
         else:  # Single tree
-            _shrink_tree_rec(self.estimator_, self.shrink_mode, self.lmb, self.alpha, self.beta, X)
+            _shrink_tree_rec(self.estimator_, self.shrink_mode, self.lmb, self.alpha, self.beta, self.alpha_p, self.beta_p, X)
 
     def _validate_arguments(self, X, y, feature_names):
         if self.shrink_mode not in ["hs","beta"]:

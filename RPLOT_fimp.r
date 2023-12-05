@@ -17,7 +17,7 @@ C_qual = apply(c,1, function(x){x=x/sum(x);sqrt((mean(x[1:20]) - mean(x[-(1:20)]
 
 RES2 = cbind(A_qual, B_qual, C_qual)
 
-NN = c("NO","HS","BETA")
+NN = c("RF","HS","BETA")
 colnames(RES1) = NN
 colnames(RES2) = NN
 #dev.off()

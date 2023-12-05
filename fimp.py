@@ -27,10 +27,10 @@ for xx in range(0,30):
                                 n_features=100, 
                                 shuffle=False, 
                                 n_informative=20,
-                                n_redundant=10,
+                                n_redundant=2,
                                 class_sep=3,
                                 #flip_y = 0.3)
-                                weights=[0.50])
+                                weights=[0.90])
 
     ntrees = 500
     #sc = "roc_auc"
@@ -95,21 +95,23 @@ for xx in range(0,30):
     shrink_mode="beta"
     #scores[shrink_mode] = []
     param_grid = {
-    "alpha": [1000, 700, 500, 200, 100, 50, 10, 1],
-    "beta": [1000, 700, 500, 200, 100, 50, 10, 1],
+    "alpha": [5000, 2000, 1000, 700, 500, 200, 100, 50, 10, 1],
+    "beta": [5000, 2000, 1000, 700, 500, 200, 100, 50, 10, 1],
     "shrink_mode": ["beta"]}
 
     grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), param_grid, cv=5, n_jobs=-1, scoring=sc)
     grid_search.fit(X, y)
 
     best_params = grid_search.best_params_
-    #print(best_params)
+    print(best_params)
 
     clf2 = ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees),shrink_mode=shrink_mode, alpha=best_params.get('alpha'), beta=best_params.get('beta'))
     clf2.fit(X, y)
 
     #FI_beta = clf2.estimator_.feature_importances_
-    FI_beta.append(importance(clf2))
+    FI_beta.append(clf2.estimator_.feature_importances_)
+
+    #FI_beta.append(importance(clf2))
 
     #np.savetxt("FI_beta",FI_beta, delimiter='\t')
 
@@ -123,6 +125,6 @@ for xx in range(0,30):
 
     #np.savetxt("FI_ehsc_SHAP",importances, delimiter='\t')
 
-np.savetxt("FI_no_hsc",FI_no_hsc, delimiter='\t')
-np.savetxt("FI_hsc",FI_hsc, delimiter='\t')
-np.savetxt("FI_beta",FI_beta, delimiter='\t')
+    np.savetxt("FI_no_hsc",FI_no_hsc, delimiter='\t')
+    np.savetxt("FI_hsc",FI_hsc, delimiter='\t')
+    np.savetxt("FI_beta",FI_beta, delimiter='\t')
