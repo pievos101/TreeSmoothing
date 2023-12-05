@@ -22,7 +22,7 @@ colnames(RES1) = NN
 colnames(RES2) = NN
 #dev.off()
 par(mfrow=c(1,2))
-boxplot(RES1, ylim=c(0.5, 1))
+boxplot(RES1, ylim=c(0, 1))
 boxplot(RES2)
 
 

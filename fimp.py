@@ -30,7 +30,7 @@ for xx in range(0,30):
                                 n_redundant=2,
                                 class_sep=3,
                                 #flip_y = 0.3)
-                                weights=[0.90])
+                                weights=[0.95])
 
     ntrees = 500
     #sc = "roc_auc"
@@ -95,8 +95,8 @@ for xx in range(0,30):
     shrink_mode="beta"
     #scores[shrink_mode] = []
     param_grid = {
-    "alpha": [5000, 2000, 1000, 700, 500, 200, 100, 50, 10, 1],
-    "beta": [5000, 2000, 1000, 700, 500, 200, 100, 50, 10, 1],
+    "alpha": [2000, 1000, 700, 500, 200, 100, 50, 10, 1],
+    "beta": [2000, 1000, 700, 500, 200, 100, 50, 10, 1],
     "shrink_mode": ["beta"]}
 
     grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), param_grid, cv=5, n_jobs=-1, scoring=sc)
