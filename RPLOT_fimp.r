@@ -9,7 +9,6 @@ C_cov = apply(c,1,function(x){sum(is.element(1:20,rank(-as.matrix(x))[1:20]))})/
 
 RES1 = cbind(A_cov, B_cov, C_cov)
 
-
 # Quality 
 A_qual = apply(a,1, function(x){x=x/sum(x);sqrt((mean(x[1:20]) - mean(x[-(1:20)]))^2)})
 B_qual = apply(b,1, function(x){x=x/sum(x);sqrt((mean(x[1:20]) - mean(x[-(1:20)]))^2)})
@@ -17,13 +16,22 @@ C_qual = apply(c,1, function(x){x=x/sum(x);sqrt((mean(x[1:20]) - mean(x[-(1:20)]
 
 RES2 = cbind(A_qual, B_qual, C_qual)
 
+# Mean Coverage Standard Error
+
+MEAN = apply(RES1,2,mean)
+STER = apply(RES1,2,sd)/dim(RES1)[1]
+
 NN = c("RF","HS","BETA")
 colnames(RES1) = NN
-colnames(RES2) = NN
+boxplot(RES1, ylim=c(0.2, 1), ylab="Coverage")
+points(1:3,MEAN, pch=19, type="b", lwd=2, col="orange", cex=0.5)
+arrows(1:3,MEAN-STER,1:3,MEAN+STER, code=3, length=0.2, angle = 90)
+
+#colnames(RES2) = NN
 #dev.off()
-par(mfrow=c(1,2))
-boxplot(RES1, ylim=c(0, 1))
-boxplot(RES2)
+#par(mfrow=c(1,2))
+#boxplot(RES1, ylim=c(0, 1))
+#boxplot(RES2)
 
 
 

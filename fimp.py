@@ -23,14 +23,14 @@ FI_beta = list()
 
 for xx in range(0,30):
     print(xx)
-    X, y = make_classification(n_samples=500,
+    X, y = make_classification(n_samples=200,
                                 n_features=100, 
                                 shuffle=False, 
                                 n_informative=20,
                                 n_redundant=2,
                                 class_sep=3,
                                 #flip_y = 0.3)
-                                weights=[0.95])
+                                weights=[0.50])
 
     ntrees = 500
     #sc = "roc_auc"
@@ -62,7 +62,7 @@ for xx in range(0,30):
     shrink_mode = "hs"
 
     param_grid = {
-        "lmb": [0.001, 0.01, 0.1, 1, 10, 25, 50, 100, 200],
+        "lmb": [0.0001, 0.001, 0.01, 0.1, 1, 10, 25, 50, 100, 200],
         "shrink_mode": ["hs"]
     }
 
@@ -70,7 +70,7 @@ for xx in range(0,30):
 
     grid_search.fit(X, y)
     best_params = grid_search.best_params_
-    #print(best_params)
+    print(best_params)
 
     clf = ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees),shrink_mode=shrink_mode, lmb=best_params.get('lmb'))
     #print(clf)
@@ -95,8 +95,8 @@ for xx in range(0,30):
     shrink_mode="beta"
     #scores[shrink_mode] = []
     param_grid = {
-    "alpha": [2000, 1000, 700, 500, 200, 100, 50, 10, 1],
-    "beta": [2000, 1000, 700, 500, 200, 100, 50, 10, 1],
+    "alpha": [5000, 2000, 1000, 700, 500, 200, 100, 50, 10, 1],
+    "beta": [5000, 2000, 1000, 700, 500, 200, 100, 50, 10, 1],
     "shrink_mode": ["beta"]}
 
     grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), param_grid, cv=5, n_jobs=-1, scoring=sc)
