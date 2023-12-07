@@ -23,14 +23,14 @@ FI_beta = list()
 
 for xx in range(0,30):
     print(xx)
-    X, y = make_classification(n_samples=200,
+    X, y = make_classification(n_samples=500,
                                 n_features=100, 
                                 shuffle=False, 
                                 n_informative=20,
                                 n_redundant=2,
                                 class_sep=3,
                                 #flip_y = 0.3)
-                                weights=[0.50])
+                                weights=[0.99])
 
     ntrees = 500
     #sc = "roc_auc"
