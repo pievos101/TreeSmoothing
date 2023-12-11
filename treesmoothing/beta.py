@@ -125,7 +125,8 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0,
     else:
         if shrink_mode == 'beta':
             dt.tree_.value[node, :, :] = [alpha/(alpha + beta), beta/(alpha + beta)]
-           
+            dt.tree_.n_node_samples[node] = alpha + beta
+
 class ShrinkageEstimator(BaseEstimator):
     def __init__(self, base_estimator: BaseEstimator = None,
                  shrink_mode: str = "hs", lmb: float = 1, alpha: float=1, beta: float=1,
