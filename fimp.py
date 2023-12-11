@@ -28,13 +28,13 @@ for xx in range(0,30):
                                 shuffle=False, 
                                 n_informative=20,
                                 n_redundant=2,
-                                class_sep=3,
+                                class_sep=1)
                                 #flip_y = 0.3)
-                                weights=[0.99])
+                                #weights=[0.50])
 
-    ntrees = 500
-    #sc = "roc_auc"
-    sc = "balanced_accuracy"
+    ntrees = 100
+    sc = "roc_auc"
+    #sc = "balanced_accuracy"
 
     # Compute importances for classical RF/DT
     clf = RandomForestClassifier(n_estimators=ntrees).fit(X, y)

@@ -103,8 +103,9 @@ def _shrink_tree_rec(dt, shrink_mode, lmb=0,
     if shrink_mode == 'beta':
         dt.tree_.value[node, :, :] = [alpha, beta]
         
-        p1 = value[0][0]/(alpha + beta)
-        prob = [p1, 1-p1]
+        p1 = value[0][0]/(alpha+beta)
+        p2 = value[0][1]/(alpha+beta)
+        prob = [p1, p2]
         dt.tree_.impurity[node] = 1 - np.sum(np.power(prob, 2))
         # -------------------------------------------
 

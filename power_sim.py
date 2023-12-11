@@ -24,16 +24,17 @@ def simulate_data(n_samples: int, relevance: float):
     return X, y
 
 sc = "roc_auc"
-ntrees = 100
+#sc = "balanced_accuracy"
+ntrees = 50
 relevances = [0.0, 0.05, 0.1, 0.15, 0.2]
 #relevances = [0.15]
 
 for rel in relevances:
 
-    iterations = np.arange(0, 30, 1)
+    iterations = np.arange(0, 20, 1)
 
    
-    X, y = simulate_data(500, rel)
+    X, y = simulate_data(200, rel)
     scores = {}
     scores["vanilla"] = []
     scores["hs"] = []
