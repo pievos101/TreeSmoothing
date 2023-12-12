@@ -14,7 +14,7 @@ from scipy.stats import beta as BETA
 from sklearn.ensemble import VotingClassifier
 import sys
 
-ntrees = 5
+ntrees = 50
 sc = "balanced_accuracy"
 #sc = "roc_auc"
 
@@ -26,18 +26,20 @@ y = np.array(y).flatten()
 PERF = []
 PERF_w = []
 
-for iter in range(0,20):
 
-    # train-test split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+# train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+
+
+for iter in range(0,20):
 
     # beta
     print("Beta Shrinkage")
     shrink_mode="beta"
     #scores[shrink_mode] = []
     param_grid = {
-    "alpha": [1000, 500, 200, 150, 100, 50, 30, 10, 5, 1],
-    "beta": [1000, 500, 200, 150, 100, 50, 30, 10, 5, 1],
+    "alpha": [500, 200, 150, 100, 50, 30, 10, 5, 1],
+    "beta": [500, 200, 150, 100, 50, 30, 10, 5, 1],
     "shrink_mode": ["beta"]}
 
     grid_search = GridSearchCV(ShrinkageClassifier(RandomForestClassifier(n_estimators=ntrees)), param_grid, cv=5, n_jobs=-1, scoring=sc)
@@ -61,8 +63,8 @@ for iter in range(0,20):
     ENTROPY_ALL = []
     for xx in range(0,len(clf.estimator_.estimators_)):    
         ENTROPY = [] 
-        for yy in range(0, len(y_train)):
-            leaf_id = clf.estimator_.estimators_[xx].apply(X_train)[yy] # first patient
+        for yy in range(0, len(y_test)):
+            leaf_id = clf.estimator_.estimators_[xx].apply(X_test)[yy] # first patient
             N = clf.estimator_.estimators_[xx].tree_.n_node_samples[leaf_id]
             prob = clf.estimator_.estimators_[xx].tree_.value[leaf_id]
             a  = (N*prob)[0][0]
@@ -82,7 +84,7 @@ for iter in range(0,20):
         PRED.append(clf.estimator_.estimators_[xx].predict(X_test))
 
     PRED = np.vstack(PRED)
-    W = np.average(PRED,0, weights=ENTROPY_ALL/ENTROPY_ALL.sum())
+    W = np.average(PRED,0, weights=ENTROPY_ALL)#/ENTROPY_ALL.sum())
     W[W>0.5] = 1
     W[W<=0.5] = 0
 
@@ -93,8 +95,11 @@ for iter in range(0,20):
         pred_beta = W
         perf2 = roc_auc_score(y_test, pred_beta)    
 
-
     PERF.append(perf)
     PERF_w.append(perf2)
     print(PERF)
     print(PERF_w)
+
+    np.savetxt("PERF",np.vstack(PERF), delimiter='\t')
+    np.savetxt("PERF_w",np.vstack(PERF_w), delimiter='\t')
+    

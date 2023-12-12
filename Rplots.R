@@ -45,3 +45,30 @@ p1 <- ggplot(RES_ALL, aes(x = L1, y = value, fill=X2)) +
   ggtitle("") +
   theme(plot.title = element_text(size=10))
 
+#############################################
+#### other stuff --> weighted vs non-weighted
+a = read.table("PERF")
+b = read.table("PERF_w")
+
+RES = cbind(a,b)
+colnames(RES) = c("non-weighted", "weighted")
+
+library(reshape)
+library(ggplot2)
+
+RES_melt = melt(RES)
+colnames(RES_melt) = c("Method","value")
+
+p1 <- ggplot(RES_melt, aes(x = Method, y = value, fill=Method)) + 
+  geom_boxplot(notch = FALSE, outlier.shape = NA) +
+  #geom_violin(trim=FALSE) +
+  #geom_line(data = EstimateMelted, aes(x = id,y = value, group = Type, colour = Type, linetype = Type), size = 1) +
+  #scale_fill_manual(values=c("orange","cadetblue"))+ 
+          #facet_grid(~group) + 
+  #scale_color_manual(values=c("#000000","#CC6666")) +
+  xlab("") + ylab("Balanced accuracy")  + 
+  #theme(axis.text.x = element_text(angle = 90)) +
+  ylim(c(0.7,0.9))+
+  theme(legend.position="bottom", legend.title =element_blank())+
+  ggtitle("") +
+  theme(plot.title = element_text(size=15))
