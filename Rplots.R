@@ -67,8 +67,11 @@ p1 <- ggplot(RES_melt, aes(x = Method, y = value, fill=Method)) +
           #facet_grid(~group) + 
   #scale_color_manual(values=c("#000000","#CC6666")) +
   xlab("") + ylab("Balanced accuracy")  + 
+  stat_summary(fun.y=mean, geom="point", shape=20, size=7, 
+  color="black", fill="black") +
   #theme(axis.text.x = element_text(angle = 90)) +
-  ylim(c(0.7,0.9))+
+  ylim(c(0.7,0.85))+
+  theme_bw(base_size = 14) +
   theme(legend.position="bottom", legend.title =element_blank())+
   ggtitle("") +
   theme(plot.title = element_text(size=15))

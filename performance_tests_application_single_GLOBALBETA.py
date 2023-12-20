@@ -35,7 +35,7 @@ PERF = []
 PERF_w = []
 
 
-for iter in range(0,20):
+for iter in range(0,1):
 
     # train-test split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
@@ -65,11 +65,11 @@ for iter in range(0,20):
     b_minus = b_p + b_r
 
     if sc == "balanced_accuracy":
-        pred_beta = clf.predict(X_test)
-        perf = balanced_accuracy_score(y_test, pred_beta)     
+        pred_beta1 = clf.predict(X_test)
+        perf = balanced_accuracy_score(y_test, pred_beta1)     
     if sc == "roc_auc":
-        pred_beta = clf.predict_proba(X_test)[:,1]
-        perf = roc_auc_score(y_test, pred_beta)    
+        pred_beta1 = clf.predict_proba(X_test)[:,1]
+        perf = roc_auc_score(y_test, pred_beta1)    
 
 
     ##############################
@@ -86,70 +86,41 @@ for iter in range(0,20):
             a  = (N*prob)[0][0] # class 0
             b  = (N*prob)[0][1] # class 1
             
-            if a >= b:
-                ENTROPY.append(BETA.pdf(a/(a+b), a, b))
-            if a < b: 
-                ENTROPY.append(BETA.pdf(b/(a+b), a, b))
-            
+            #if a >= b:
+            #    ENTROPY.append(BETA.pdf(a/(a+b), a, b))
+            #if a < b: 
+            #    ENTROPY.append(BETA.pdf(b/(a+b), a, b))
+    
             #ENTROPY.append(1-BETA.var(a,b))
             #ENTROPY.append(np.abs(BETA.entropy(a,b)))
-   
-        ENTROPY_ALL.append((np.array(ENTROPY)).mean()) #mean()
-        ENTROPY_ALL2.append((np.array(ENTROPY)))
+            ENTROPY.append(np.array([a,b])/len(y_train))
 
+        ENTROPY_ALL.append((np.array(ENTROPY))) 
+        
     ENTROPY_ALL = np.array(ENTROPY_ALL)
-    ENTROPY_ALL2 = np.array(ENTROPY_ALL2)
+
+    #ENTROPY_ALL2 = np.array(ENTROPY_ALL2)
     
     print(ENTROPY_ALL)
     #print(ENTROPY_ALL)
     #RES = np.vstack(ENTROPY_ALL)
     #np.savetxt("ENTROPY",RES, delimiter='\t')
 
+    W = ENTROPY_ALL[:,:,:].sum(0)
+    W = W[:,1]/(W[:,0]+W[:,1])
 
-    # Weighted Majority Vote
     if sc == "balanced_accuracy":
-        PRED = []
-        for xx in range(0,len(clf.estimator_.estimators_)): 
-            PRED.append(clf.estimator_.estimators_[xx].predict(X_test))
-
-        PRED = np.vstack(PRED)
-        W = np.average(PRED,0, weights=ENTROPY_ALL)
-        W[W>0.5] = 1
-        W[W<=0.5] = 0
-
-    # version 1
+        pred_beta2 = W
+        perf2 = balanced_accuracy_score(y_test, pred_beta2)     
     if sc == "roc_auc":
-        PRED = []
-        for xx in range(0,len(clf.estimator_.estimators_)): 
-            PRED.append(clf.estimator_.estimators_[xx].predict_proba(X_test)[:,1])
-
-        PRED = np.vstack(PRED)
-        W = np.average(PRED,0, weights=ENTROPY_ALL)
-        
-    #######################################
-    # version 2 - the regularization is too heavy here?
-    #if sc == "roc_auc":
-    #    W = []
-    #    for xx in range(0,len(y_test)): 
-    #        myW = ENTROPY_ALL2[:,xx]
-    #        W.append(np.average(PRED[:,xx],0, weights=myW))
-    #    W = np.array(W)
-    #    W[W>0.5] = 1
-    #    W[W<=0.5] = 0
-    #######################################
-        
-    if sc == "balanced_accuracy":
-        pred_beta = W
-        perf2 = balanced_accuracy_score(y_test, pred_beta)     
-    if sc == "roc_auc":
-        pred_beta = W
-        perf2 = roc_auc_score(y_test, pred_beta)    
+        pred_beta2 = W
+        perf2 = roc_auc_score(y_test, pred_beta2)    
 
     PERF.append(perf)
     PERF_w.append(perf2)
     print(PERF)
     print(PERF_w)
 
-    np.savetxt("PERF",np.vstack(PERF), delimiter='\t')
-    np.savetxt("PERF_w",np.vstack(PERF_w), delimiter='\t')
-    
+    np.savetxt("PRED",np.vstack(pred_beta1), delimiter='\t')
+    np.savetxt("PRED_w",np.vstack(pred_beta2), delimiter='\t')
+    np.savetxt("y_test",np.vstack(y_test), delimiter='\t')
