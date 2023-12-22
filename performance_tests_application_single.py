@@ -15,20 +15,20 @@ from sklearn.ensemble import VotingClassifier
 import sys
 from imodels.util.data_util import get_clean_dataset
 
-X = pd.read_csv("OMICS.txt", sep='\t')
-X = np.array(X)
-y = pd.read_csv("omics_target.txt", sep='\t') 
-y = np.array(y).flatten()
+#X = pd.read_csv("OMICS.txt", sep='\t')
+#X = np.array(X)
+#y = pd.read_csv("omics_target.txt", sep='\t') 
+#y = np.array(y).flatten()
 
 
-#clf_datasets = [
-#    ("breast-cancer", "breast_cancer", "imodels")
-#]
+clf_datasets = [
+    ("breast-cancer", "breast_cancer", "imodels")
+]
 
-#for ds_name, id, source in clf_datasets:
-#    X, y, feature_names = get_clean_dataset(id, data_source=source)
+for ds_name, id, source in clf_datasets:
+    X, y, feature_names = get_clean_dataset(id, data_source=source)
 
-ntrees = 50
+ntrees = 10
 #sc = "balanced_accuracy"
 sc = "roc_auc"
 PERF = []
@@ -83,13 +83,21 @@ for iter in range(0,20):
             N = clf.estimator_.estimators_[xx].tree_.n_node_samples[leaf_id]
             prob = clf.estimator_.estimators_[xx].tree_.value[leaf_id]
             
-            a  = (N*prob)[0][0] # class 0
-            b  = (N*prob)[0][1] # class 1
+            # Get length of path
+            node_indicator = clf.estimator_.estimators_[xx].decision_path(X_test)
+            sample_id = yy
+            # obtain ids of the nodes `sample_id` goes through, i.e., row `sample_id`
+            node_index = node_indicator.indices[
+                node_indicator.indptr[sample_id] : node_indicator.indptr[sample_id + 1]
+            ]
+
+            a  = (N*prob)[0][0]/len(node_index)#/len(y_train) # class 0
+            b  = (N*prob)[0][1]/len(node_index)#/#len(y_train) # class 1
             
-            if a >= b:
-                ENTROPY.append(BETA.pdf(a/(a+b), a, b))
-            if a < b: 
-                ENTROPY.append(BETA.pdf(b/(a+b), a, b))
+            #if a >= b:
+            ENTROPY.append(BETA.pdf(a/(a+b), a, b))
+            #if a < b: 
+            #    ENTROPY.append(BETA.pdf(b/(a+b), a, b))
             
             #ENTROPY.append(1-BETA.var(a,b))
             #ENTROPY.append(np.abs(BETA.entropy(a,b)))
@@ -100,7 +108,7 @@ for iter in range(0,20):
     ENTROPY_ALL = np.array(ENTROPY_ALL)
     ENTROPY_ALL2 = np.array(ENTROPY_ALL2)
     
-    print(ENTROPY_ALL)
+    print(ENTROPY_ALL2)
     #print(ENTROPY_ALL)
     #RES = np.vstack(ENTROPY_ALL)
     #np.savetxt("ENTROPY",RES, delimiter='\t')
@@ -127,13 +135,13 @@ for iter in range(0,20):
         W = np.average(PRED,0, weights=ENTROPY_ALL)
         
     #######################################
-    # version 2 - the regularization is too heavy here?
-    #if sc == "roc_auc":
-    #    W = []
-    #    for xx in range(0,len(y_test)): 
-    #        myW = ENTROPY_ALL2[:,xx]
-    #        W.append(np.average(PRED[:,xx],0, weights=myW))
-    #    W = np.array(W)
+    # version 2 - the regularization for each sample!
+    if sc == "roc_auc":
+        W = []
+        for xx in range(0,len(y_test)): 
+            myW = ENTROPY_ALL2[:,xx]
+            W.append(np.average(PRED[:,xx],0, weights=myW))
+        W = np.array(W)
     #    W[W>0.5] = 1
     #    W[W<=0.5] = 0
     #######################################
