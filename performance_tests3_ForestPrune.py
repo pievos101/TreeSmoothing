@@ -12,7 +12,7 @@ from sklearn.metrics import roc_auc_score
 
 import sys
 
-import ForestPrune 
+from ForestPrune import ForestPrune 
 
 clf_datasets = [
     ("heart", "heart", "imodels"),
@@ -53,7 +53,7 @@ clf_datasets = [
 
 ####
 clf_datasets = [
-      ("heart", "heart", "imodels")
+    ("breast-cancer", "breast_cancer", "imodels")
 ]
 
 
@@ -63,8 +63,8 @@ sc = "roc_auc"
 
 #ntrees = 100
 
-for ntrees in [1, 2, 5, 10, 50, 100]:
-    iterations = np.arange(0, 20, 1)
+for ntrees in [5, 10, 50, 100]:
+    iterations = np.arange(0, 50, 1)
 
     for ds_name, id, source in clf_datasets:
         X, y, feature_names = get_clean_dataset(id, data_source=source)
@@ -75,7 +75,8 @@ for ntrees in [1, 2, 5, 10, 50, 100]:
         scores["vanilla"] = []
         scores["hs"] = []
         scores["beta"] = []
-            
+        scores["ForestPrune"] = []
+
         for xx in iterations:
 
             # train-test split
@@ -142,11 +143,23 @@ for ntrees in [1, 2, 5, 10, 50, 100]:
                 scores[shrink_mode].append(roc_auc_score(y_test, pred_beta))    
 
             #ForestPrune
+            print("ForestPrune")
+            shrink_mode="ForestPrune"
 
+            res = ForestPrune(X_train, y_train, X_test, y_test, ntrees)
+            #print(res)
+            if res == False:
+                scores[shrink_mode].append(np.NAN)      
+                continue
             
+            if sc == "balanced_accuracy":
+                scores[shrink_mode].append(balanced_accuracy_score(y_test, res[0]))      
+            if sc == "roc_auc":
+                scores[shrink_mode].append(roc_auc_score(y_test, res[1]))    
+
             print(scores)
 
-    RES = np.vstack([scores['vanilla'],scores['hs'],scores['beta']])
+    RES = np.vstack([scores['vanilla'],scores['hs'],scores['beta'], scores['ForestPrune']])
     print(RES)
 
     np.savetxt(str(ntrees),RES, delimiter='\t')
