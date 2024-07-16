@@ -84,7 +84,7 @@ def converge_test(sequence, threshold, tail_length):
 
 def solve_weighted(Y,tree_list,diff_array_list,alpha,learning_rate,
                                           W_array,normalization,warm_start= []):
-    max_depth = tree_list[0].max_depth + 10 #BUG +10
+    max_depth = tree_list[0].max_depth + 50 #BUG +10
     #print(max_depth)
     #Y = np.array(Y.values)
     Y = np.array(Y)
@@ -146,7 +146,7 @@ def solve_weighted(Y,tree_list,diff_array_list,alpha,learning_rate,
 
 
 def nodes_per_layer(tree_list):
-    max_depth = tree_list[0].max_depth + 10
+    max_depth = tree_list[0].max_depth + 50 #BUG + 10
     results = []
     for tree1 in tree_list:
         depths = get_node_depths(tree1)
@@ -240,7 +240,7 @@ def difference_array(X, tree_learner):
         node_ids = node_indicator.indices[node_indicator.indptr[i] : node_indicator.indptr[i + 1]]
         instance_values = np.ndarray.flatten(values[node_ids])
         diffs = [j-i for i, j in zip(instance_values[:-1], instance_values[1:])]
-        row = np.zeros(tree_learner.max_depth+10) #BUG + 10
+        row = np.zeros(tree_learner.max_depth+50) #BUG + 10
         #print(i)
         #print(len(diffs))
         #print(diffs)
