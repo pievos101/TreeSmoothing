@@ -4,7 +4,7 @@
 
 This above picture is from (https://www.blackandwhite.ie/mononeil/blurred-forest)
 
-# Bayesian post-hoc regularization for random forests
+# TreeSmoothing: Post-hoc Regularization of Tree Ensembles
 
 ## Method Description
 Random Forests are powerful ensemble learning algorithms widely used in various machine learning tasks. However, they have a tendency to overfit noisy or irrelevant features, which can result in decreased generalization performance. Post-hoc regularization techniques aim to mitigate this issue by modifying the structure of the learned ensemble after its training.
