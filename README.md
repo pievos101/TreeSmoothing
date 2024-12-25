@@ -187,13 +187,14 @@ It is based on the Hierarchical Shrinkage implementation within the Python packa
 If you find the Bayesian post-hoc method useful please cite
 
 ```
-@misc{pfeifer2023bayesian,
-      title={Bayesian post-hoc regularization of random forests}, 
-      author={Bastian Pfeifer},
-      year={2023},
-      eprint={2306.03702},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+@article{pfeifer2025tree,
+  title={Tree smoothing: Post-hoc regularization of tree ensembles for interpretable machine learning},
+  author={Pfeifer, Bastian and Gevaert, Arne and Loecher, Markus and Holzinger, Andreas},
+  journal={Information Sciences},
+  volume={690},
+  pages={121564},
+  year={2025},
+  publisher={Elsevier}
 }
 ```
 
